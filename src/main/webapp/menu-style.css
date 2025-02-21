@@ -1,0 +1,11 @@
+.dropdown-submenu {
+            position: relative;
+        }
+        .dropdown-submenu .dropdown-menu {
+            top: 0;
+            left: 100%; /* Positionnement du sous-sous-menu à droite du sous-menu */
+            margin-top: -6px;
+        }
+        .dropdown:hover > .dropdown-menu {
+            display: block;
+        }

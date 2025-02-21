@@ -1,0 +1,281 @@
+/////////////////////////////////////////////////////////////////////////////
+////    PROJET LOGICIEL FACTURATION COMPTABILITE                          ///
+///     PROGRAMME FORM CONTRATCLIENT CREATIO                              ///
+////    Créé par Fabrice FOUGERY le 29/04/2024                            ///
+////    Modifié par ....... .... le ../../....                            ///
+/////////////////////////////////////////////////////////////////////////////
+
+package com.ws.forms.contrat;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.ws.Dao.DaoFactory;
+import com.ws.Dao.ContratDao;
+import com.ws.beans.Contrat;
+import com.ws.beans.Tva;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+public final class ControleVersionContratForm {
+	private ContratDao collaborateurDao;
+	private static final String CHAMP_STATUT = "statut";
+	private static final String CHAMP_DOCUMENT = "document";
+	private static final String CHAMP_NOM_CONTRAT = "nom_contrat";
+	private static final String CHAMP_TYPE_CONTRAT = "type_contrat";
+	private static final String CHAMP_ID_REFERENT_COLLABORATEUR = "collaborateurSelectid";
+	private static final String CHAMP_COLLABORATEUR = "collaborateur";
+	private static final String CHAMP_ID_CLIENT = "clientSelectid";
+	private static final String CHAMP_CLIENT = "client";
+	private static final String CHAMP_DATE_DEMARRAGE = "date_demarrage";
+	private static final String CHAMP_COMMENTAIRE = "commentaire";
+	private static String chemin_relatif_document_reel;
+	private static String chemin_absolu_document_reel;
+	private String valeurStatut;
+	private String valeurDocument;
+	private String valeurNom_contrat;
+	private String valeurType_contrat;
+	private String[] valeursType_contrat;
+	private String[] valeurIdETclient;
+	private int valeurId_client;
+	private String valeurClient;
+	private String[] valeurIdETcollaborateur;
+	private int valeurId_referent_collaborateur;
+	private String valeurCollaborateur;
+	private String valeurDate_demarrage;
+	private String valeurCommentaire;
+	private String resultat;
+	private Map<String, String> erreurs = new HashMap<String, String>();
+	private int id = 0;
+	private int version = 0;
+
+	public Map<String, String> getErreurs() {
+		return erreurs;
+	}
+
+	public String getResultat() {
+		return resultat;
+	}
+
+	public Contrat VersionnerContrat(HttpServletRequest request, Contrat contrat) {
+
+		DaoFactory daoFactory = DaoFactory.getInstance();
+		this.collaborateurDao = daoFactory.getContratDao();
+
+		Map<String, Map<String, String>> contracts = (Map<String, Map<String, String>>) request.getSession()
+				.getAttribute("contracts");
+
+//=============================================================================================================//
+// récupération des paramétres
+// =============================================================================================================//
+// =====STATUT
+		String statut = getValeurChamp(request, CHAMP_STATUT);
+		try {
+			valeurStatut = validationStatut(statut);
+		} catch (Exception e) {
+			setErreur(CHAMP_STATUT, e.getMessage());
+		}
+
+		if (erreurs.isEmpty()) {
+			resultat = "Succès de la création de la Contrat.";
+		} else {
+			resultat = "Échec de la création de la Contrat.";
+			for (Map.Entry<String, String> entree : erreurs.entrySet()) {
+			}
+		}
+		System.out.println(resultat);
+		System.out.println(contrat.getId());
+		return contrat;
+	}
+
+	// =============================================================================================================//
+	// Procédures de contrôle
+	// =============================================================================================================//
+	// =====STATUT
+	private String validationStatut(String statut) throws Exception {
+		String temp = statut;
+		if (temp != null) {
+			if(! temp.equals("En-cours")) {
+				throw new Exception("un contrat est versionnable uniquement s'il est au statut 'En-cours' ");
+			}else
+				{}
+		} else {
+			throw new Exception("Choisir un statut.");
+		}
+		return temp;
+	}
+
+	// =====DOCUMENT
+	private String validationDocument(String document) throws Exception {
+		String temp = document;
+		if (temp != null) {
+		} else {
+			// throw new Exception("Taper un nom de document.");
+		}
+		return temp;
+	}
+
+	// =====NOM CONTRAT
+	private String validationNom_contrat(String nom_contrat) throws Exception {
+		String temp = nom_contrat;
+		if (temp != null) {
+		} else {
+			throw new Exception("Taper un nom de contrat.");
+		}
+		return temp;
+	}
+
+	// =====TYPE CONTRAT
+	private String[] validationType_contrat(String type_contrat, Map<String, Map<String, String>> contracts)
+			throws Exception {
+		String temp = "CLIENT_" + type_contrat;
+		String[] valeurs = new String[3];
+
+		// Parcourir la structure de données
+		for (Map.Entry<String, Map<String, String>> contractEntry : contracts.entrySet()) {
+			String contractKey = contractEntry.getKey();
+			Map<String, String> contractValues = contractEntry.getValue();
+
+			for (Map.Entry<String, String> valueEntry : contractValues.entrySet()) {
+				String innerKey = valueEntry.getKey();
+				String innerValue = valueEntry.getValue();
+			}
+		}
+
+		if (temp != null) {
+
+			if (contracts != null && contracts.containsKey(temp)) {
+				Map<String, String> contractPaths = contracts.get(temp);
+				chemin_relatif_document_reel = contractPaths.get("cheminRelatif");
+				chemin_absolu_document_reel = contractPaths.get("cheminAbsolu");
+
+			} else {
+				throw new Exception("Choisir un type de contrat.");
+			}
+		} else {
+			throw new Exception("Choisir un type de contrat.");
+		}
+		valeurs[0] = type_contrat;
+		valeurs[1] = chemin_relatif_document_reel;
+		valeurs[2] = chemin_absolu_document_reel;
+		return valeurs;
+	}
+
+	// =====ID REFERENT ET COLLABORATEUR
+	// ===== --> L'id et le collaborateur sont dans un même string séparé par "_"
+	private String[] validationIdEtCollaborateur(String idEtCollaborateur) throws Exception {
+		String temp = idEtCollaborateur;
+		String[] parts;
+		if (temp != null) {
+			String collaborateurInfo = temp;
+			parts = collaborateurInfo.split("_");
+			// Vérifier que la chaîne a bien été splittée en deux parties
+			if (parts.length == 2) {
+				try {
+					// Convertir la première partie en entier
+					int id = Integer.parseInt(parts[0]);
+
+					// La deuxième partie reste une chaîne
+					String name = parts[1];
+				} catch (NumberFormatException e) {
+					throw new Exception("Choisir un collaborateur.");
+				}
+			}
+		} else {
+			throw new Exception("Choisir un collaborateur.");
+		}
+		return parts;
+	}
+
+	// =====ID ET CLIENT --> L'id et le client sont dans un même string séparé par
+	// "_"
+	private String[] validationIdEtClient(String idEtClient) throws Exception {
+		String temp = idEtClient;
+		String[] parts;
+		if (temp != null) {
+			String clientInfo = temp;
+			parts = clientInfo.split("_");
+			// Vérifier que la chaîne a bien été splittée en deux parties
+			if (parts.length == 2) {
+				try {
+					// Convertir la première partie en entier
+					int id = Integer.parseInt(parts[0]);
+
+					// La deuxième partie reste une chaîne
+					String name = parts[1];
+				} catch (NumberFormatException e) {
+					throw new Exception("Choisir un client.");
+				}
+			}
+		} else {
+			throw new Exception("Choisir un client.");
+		}
+		return parts;
+	}
+
+// =====DATE DEMARRAGE
+	private String validationDate_demarrage(String date_demarrage) throws Exception {
+		String selectedDate = date_demarrage;
+		// Parse the selected date and transform it to aaaa-mm-jj
+		if (selectedDate != null && !selectedDate.isEmpty()) {
+			String[] dateParts = selectedDate.split("-");
+			if (dateParts.length == 3) {
+				String day = dateParts[0];
+				String month = dateParts[1];
+				String year = dateParts[2];
+				selectedDate = year + "-" + month + "-" + day;
+			} else
+				throw new Exception("La date doit être au format dd/mm/yyyy");
+		}
+		return selectedDate;
+	}
+
+	// =====COMMENTAIRE
+	private String validationCommentaire(String commentaire) throws Exception {
+		String temp = commentaire;
+		if (temp != null) {
+		}
+		return temp;
+	}
+
+	// Ajoute un message correspondant au champ spécifié à la map des erreurs.
+	private void setErreur(String champ, String message) {
+		erreurs.put(champ, message);
+	}
+
+	// Méthode utilitaire qui retourne null si un champ est vide, et son contenu
+	private static String getValeurChamp(HttpServletRequest request, String versionChamp) {
+		String valeur = request.getParameter(versionChamp);
+		if (valeur == null || valeur.trim().length() == 0) {
+			return null;
+		} else {
+			return valeur;
+		}
+	}
+
+	// ===========================================================================
+	// ============ AFFICHER DATE
+	// ===========================================================================
+	private String affichateDate_JJMMAAAA(String date_JJMMAAAA) throws Exception {
+		String selectedDate = date_JJMMAAAA;
+		// Parse the selected date and transform it to aaaa-mm-jj
+		if (selectedDate != null && !selectedDate.isEmpty()) {
+			String[] dateParts = selectedDate.split("-");
+			if (dateParts.length == 3) {
+				String year = dateParts[0];
+				String month = dateParts[1];
+				String day = dateParts[2];
+				selectedDate = day + "-" + month + "-" + year;
+			}
+		}
+		return selectedDate;
+	}
+
+}

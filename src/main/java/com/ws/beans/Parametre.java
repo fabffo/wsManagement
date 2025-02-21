@@ -1,0 +1,19 @@
+package com.ws.beans;
+
+public class Parametre {
+    private String key;
+    private String value;
+
+    public Parametre(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+}

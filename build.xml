@@ -1,0 +1,59 @@
+<project name="wsManagement" default="deploy" basedir=".">
+	<property name="tomcat.webapps.dir"
+		value="C:\Users\fougery\Documents\APPLICATION_WEB\apache-tomcat-10.0\webapps" />
+	<property name="tomcat.home"
+		value="C:\Users\fougery\Documents\APPLICATION_WEB\apache-tomcat-10.0" />
+	<property name="tomcat.lib" value="${tomcat.home}/lib" />
+	<property name="tomcat.webapps.dir" value="${tomcat.home}/webapps" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="dist.dir" value="${build.dir}/dist" />
+	<property name="war.name" value="wsManagement.war" />
+	<property name="lib.dir" value="${basedir}/src/main/webapp/WEB-INF/lib" />
+	<property name="webapp.dir" value="${basedir}/src/main/webapp" />
+	<property name="src.dir" value="${basedir}/src/main/java" />
+
+	<!-- Ensure necessary directories exist -->
+	<target name="prepare">
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<!-- Define the classpath including all JARs in lib.dir -->
+	<path id="project.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${tomcat.lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- Clean target to delete previous build artifacts -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!-- Compile target to compile Java sources -->
+	<target name="compile" depends="clean, prepare">
+		<javac srcdir="${src.dir}" destdir="${build.dir}/classes"
+			includeantruntime="false">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<!-- Package target to create a WAR file -->
+	<target name="war" depends="compile">
+		<war destfile="${dist.dir}/${war.name}"
+			webxml="${webapp.dir}/WEB-INF/web.xml">
+			<fileset dir="${webapp.dir}" includes="**/*" />
+			<lib dir="${lib.dir}" />
+			<classes dir="${build.dir}/classes" />
+		</war>
+	</target>
+
+	<!-- Deploy target to copy WAR file to Tomcat webapps directory -->
+	<target name="deploy" depends="war">
+		<copy file="${dist.dir}/${war.name}" todir="${tomcat.webapps.dir}" />
+	</target>
+</project>

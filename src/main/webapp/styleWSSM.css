@@ -1,0 +1,122 @@
+/* Eléments principaux de la page */
+.couleurWavy {
+	color: #00264C;
+}
+
+.navbar {
+	background-color: #00264C;
+}
+
+.icon-green {
+	color: green;
+}
+
+.icon-red {
+	color: red;
+}
+
+.card-deck .card {
+	min-width: 18rem;
+	flex: 1 1 auto;
+}
+
+.card-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.card-img-top {
+	height: 150px;
+	object-fit: cover;
+}
+
+.btn-group {
+	display: flex;
+	justify-content: center;
+}
+
+.btn {
+	flex: 1;
+	margin: 2px;
+}
+.btn-orange {
+      color: darkorange !important;
+      border: 0px darkorange !important;
+      border-radius: 0; /* Rendre les coins carrés */
+    }
+.btn-orange:hover {
+      background-color: darkorange !important;
+      border-color: orange !important;
+      color: white !important;
+    }
+
+.En-cours {
+    color:  #28a745 !important;
+    border: 0px   #28a745 !important;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+}
+.En-cours:hover {
+      background-color:  #28a745 !important;
+      border-color:  #28a745 !important;
+      color: white !important;
+    }
+
+.Terminé {
+    color: #dc3545 !important; /* Rouge */
+    border: 0px  #dc3545 !important;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+}
+.Terminé:hover {
+      background-color:  #dc3545 !important;
+      border-color:  #dc3545 !important;;
+      color: white !important;
+    }
+
+.Annulé {
+    background-color: #fd7e14 !important; /* Orange */
+    color: white;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+}
+.Annulé:hover {
+      background-color:  #fd7e14 !important;
+      border-color:  #fd7e14 !important;;
+      color: white !important;
+    }
+
+    .Tout {
+    background-color: #808080 !important; /* Orange */
+    color: white;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+    border: 0px   !important;
+}
+.Tout:hover {
+      background-color:  #808080 !important;
+      border-color:  #808080 !important;;
+      color: white !important;
+    }
+.Visualisé {
+    color: #808080 !important; /* Rouge */
+    border: 0px  #808080 !important;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+}
+.Visualisé:hover {
+      background-color:  #808080 !important;
+      border-color:  #808080 !important;;
+      color: white !important;
+    }
+ .align-center {
+      justify-content: center;
+    }
+
+ .pdf-importation-container {
+        border: 4px solid #00264C; /* Couleur du bord */
+        border-radius: 15px; /* Bords arrondis */
+        background-color: #f8f9fa; /* Couleur de fond */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre pour un effet 3D */
+    }
