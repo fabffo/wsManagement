@@ -41,4 +41,10 @@ public interface SignataireDao {
 	List<Map<String, Object>> rechercheSignataires(Integer offset, Integer noOfRecords, String select_tri,
 			LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 
+	List<Signataire> listerSignataireClient() throws DaoException;
+
+	List<Signataire> listerSignataireFournisseur() throws DaoException;
+
+	List<Signataire> listerSignataireSalarie() throws DaoException;
+
 }

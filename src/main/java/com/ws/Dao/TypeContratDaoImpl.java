@@ -220,13 +220,13 @@ public class TypeContratDaoImpl implements TypeContratDao {
         try {
         	connexion = daoFactory.getConnection();
             statement = connexion.createStatement();
-            String sql = "SELECT id, nom, libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant FROM typeContrat;";
+            String sql = "SELECT typecontrat.id, typecontrat.nom, typecontrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, entite.nom FROM typeContrat inner join entite on typecontrat.entite=entite.id;";
             resultat = statement.executeQuery(sql);
             while (resultat.next()) {
                 TypeContrat typeContrat = new TypeContrat();
-                typeContrat.setId(resultat.getInt("id"));
-                typeContrat.setNom(resultat.getString("nom"));
-                typeContrat.setLibelle(resultat.getString("libelle"));
+                typeContrat.setId(resultat.getInt("typecontrat.id"));
+                typeContrat.setNom(resultat.getString("typecontrat.nom"));
+                typeContrat.setLibelle(resultat.getString("typecontrat.libelle"));
                 typeContrat.setEntite(resultat.getInt("entite"));
                 typeContrat.setActivite(resultat.getInt("activite"));
                 typeContrat.setCheminRelatif(resultat.getString("cheminRelatif"));
@@ -242,6 +242,101 @@ public class TypeContratDaoImpl implements TypeContratDao {
         return typeContrats;
     }
 
+    @Override
+    public List<TypeContrat> listerTypeContratClient() throws DaoException {
+        List<TypeContrat> typeContrats = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT typecontrat.id, typecontrat.nom, typecontrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, entite.nom FROM typeContrat inner join entite on typecontrat.entite=entite.id where entite.nom='Client';";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeContrat typeContrat = new TypeContrat();
+                typeContrat.setId(resultat.getInt("typecontrat.id"));
+                typeContrat.setNom(resultat.getString("typecontrat.nom"));
+                typeContrat.setLibelle(resultat.getString("typecontrat.libelle"));
+                typeContrat.setEntite(resultat.getInt("entite"));
+                typeContrat.setActivite(resultat.getInt("activite"));
+                typeContrat.setCheminRelatif(resultat.getString("cheminRelatif"));
+                typeContrat.setCheminAbsolu(resultat.getString("cheminAbsolu"));
+                typeContrat.setActivite(resultat.getInt("typeIntervenant"));
+                typeContrats.add(typeContrat);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeContrat"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeContrats;
+    }
+
+    @Override
+    public List<TypeContrat> listerTypeContratFournisseur() throws DaoException {
+        List<TypeContrat> typeContrats = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT typecontrat.id, typecontrat.nom, typecontrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, entite.nom FROM typeContrat inner join entite on typecontrat.entite=entite.id where entite.nom='Fournisseur';";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeContrat typeContrat = new TypeContrat();
+                typeContrat.setId(resultat.getInt("typecontrat.id"));
+                typeContrat.setNom(resultat.getString("typecontrat.nom"));
+                typeContrat.setLibelle(resultat.getString("typecontrat.libelle"));
+                typeContrat.setEntite(resultat.getInt("entite"));
+                typeContrat.setActivite(resultat.getInt("activite"));
+                typeContrat.setCheminRelatif(resultat.getString("cheminRelatif"));
+                typeContrat.setCheminAbsolu(resultat.getString("cheminAbsolu"));
+                typeContrat.setActivite(resultat.getInt("typeIntervenant"));
+                typeContrats.add(typeContrat);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeContrat"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeContrats;
+    }
+
+    @Override
+    public List<TypeContrat> listerTypeContratSalarie() throws DaoException {
+        List<TypeContrat> typeContrats = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT typecontrat.id, typecontrat.nom, typecontrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, entite.nom FROM typeContrat inner join entite on typecontrat.entite=entite.id where entite.nom='Salarie';";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeContrat typeContrat = new TypeContrat();
+                typeContrat.setId(resultat.getInt("typecontrat.id"));
+                typeContrat.setNom(resultat.getString("typecontrat.nom"));
+                typeContrat.setLibelle(resultat.getString("typecontrat.libelle"));
+                typeContrat.setEntite(resultat.getInt("entite"));
+                typeContrat.setActivite(resultat.getInt("activite"));
+                typeContrat.setCheminRelatif(resultat.getString("cheminRelatif"));
+                typeContrat.setCheminAbsolu(resultat.getString("cheminAbsolu"));
+                typeContrat.setActivite(resultat.getInt("typeIntervenant"));
+                typeContrats.add(typeContrat);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeContrat"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeContrats;
+    }
     	// =================================================================================
 		// TROUVER TYPECONTRAT PAR ID
 		// =================================================================================
@@ -321,10 +416,15 @@ public class TypeContratDaoImpl implements TypeContratDao {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
-
+        String ww_where ="";
+        if  (!type_entite.equals("")) {
+        	ww_where = " where entite.nom='"+type_entite+"'";
+        }
         try {
         	connexion = daoFactory.getConnection();
-            String query = "SELECT SQL_CALC_FOUND_ROWS typeContrat.id, typeContrat.nom, typeContrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, typeIntervenant.nom, entite.nom, activite.nom FROM typeContrat left join entite on entite.id=typeContrat.entite left join activite on activite.id=typeContrat.activite left join typeIntervenant on typeIntervenant.id = typeIntervenant ORDER BY " + select_tri + " LIMIT ?, ?";
+            String query = "SELECT SQL_CALC_FOUND_ROWS typeContrat.id, typeContrat.nom, typeContrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, typeIntervenant.nom, entite.nom, activite.nom FROM typeContrat left join entite on entite.id=typeContrat.entite left join activite on activite.id=typeContrat.activite left join typeIntervenant on typeIntervenant.id = typeIntervenant"
+            		+ ww_where
+            		+ " ORDER BY " + select_tri + " LIMIT ?, ?";
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);
@@ -383,10 +483,16 @@ public class TypeContratDaoImpl implements TypeContratDao {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
-
+        String ww_where ="";
+        if  (!type_entite.equals("")) {
+        	ww_where = " and entite.nom='"+type_entite+"'";
+        }
         try {
             connexion = daoFactory.getConnection();
-            String query = "SELECT SQL_CALC_FOUND_ROWS typeContrat.id, typeContrat.nom, typeContrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, typeIntervenant.nom, entite.nom, activite.nom FROM typeContrat left join entite on entite.id=typeContrat.entite left join activite on activite.id=typeContrat.activite left join typeIntervenant on typeIntervenant.id = typeIntervenant WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
+            String query = "SELECT SQL_CALC_FOUND_ROWS typeContrat.id, typeContrat.nom, typeContrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, typeIntervenant.nom, entite.nom, activite.nom FROM typeContrat left join entite on entite.id=typeContrat.entite left join activite on activite.id=typeContrat.activite left join typeIntervenant on typeIntervenant.id = typeIntervenant "
+            		+ "WHERE " + select_like
+            		+ ww_where
+            		+ " ORDER BY " + select_tri + " LIMIT ?, ?";
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);

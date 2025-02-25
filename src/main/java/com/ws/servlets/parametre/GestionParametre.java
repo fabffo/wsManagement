@@ -117,7 +117,7 @@ public class GestionParametre extends HttpServlet {
 	String type_entete;
 
 	String tag_statut="";
-	String nom_entite="";
+	String type_entite="";
 
 	// Méthode d'initialisation de la servlet
 	// Elle est appelée au démarrage de la servlet et permet d'initialiser la factory DAO et le DAO de gestion des paramètres
@@ -216,7 +216,7 @@ public class GestionParametre extends HttpServlet {
 			if (searchValeur.isEmpty()) {
 				try {
 					// Appel dynamique de la méthode  via la réflexion (exemple rechercheTvas)
-					list =  (List<Map<String, Object>>) invokeDynamicMethod(rechercheEntites, (currentPage - 1) * recordsPerPage, recordsPerPage, select_triColonne, dictionnaire_nom_colonne, tag_statut, nom_entite);
+					list =  (List<Map<String, Object>>) invokeDynamicMethod(rechercheEntites, (currentPage - 1) * recordsPerPage, recordsPerPage, select_triColonne, dictionnaire_nom_colonne, tag_statut, type_entite);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -227,7 +227,7 @@ public class GestionParametre extends HttpServlet {
 				select_like = critere_recherche_valeur + " like '" + searchValeur + "%'";
 				try {
 					// Appel dynamique de la méthode rechercheLikeTvas via la réflexion
-					list =  (List<Map<String, Object>>) invokeDynamicMethod(rechercheLikeEntites, (currentPage - 1) * recordsPerPage, recordsPerPage, select_triColonne, select_like, dictionnaire_nom_colonne, tag_statut, nom_entite);
+					list =  (List<Map<String, Object>>) invokeDynamicMethod(rechercheLikeEntites, (currentPage - 1) * recordsPerPage, recordsPerPage, select_triColonne, select_like, dictionnaire_nom_colonne, tag_statut, type_entite);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -235,7 +235,7 @@ public class GestionParametre extends HttpServlet {
 		} else {
 			try {
 				// Si aucune recherche spécifique, on fait un tri normal
-				list =  (List<Map<String, Object>>) invokeDynamicMethod(rechercheEntites, (currentPage - 1) * recordsPerPage, recordsPerPage, select_triColonne, dictionnaire_nom_colonne, tag_statut, nom_entite);
+				list =  (List<Map<String, Object>>) invokeDynamicMethod(rechercheEntites, (currentPage - 1) * recordsPerPage, recordsPerPage, select_triColonne, dictionnaire_nom_colonne, tag_statut, type_entite);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -338,17 +338,17 @@ public class GestionParametre extends HttpServlet {
 
 	// Méthode pour initialiser l'écran, récupérer les détails des paramètres, et gérer le tri
 	private void initEcran(HttpServletRequest request) throws DaoException, ServletException {
-		// gestion du paramètre typeSocieté pour filter les contrats
+		// gestion du paramètre type d'entite  pour filter les contrats
 		// =============================================================
-		if (request.getParameter("nom_entite") != null) {
-			request.getSession().setAttribute("nom_entite", request.getParameter("nom_entite"));
+		if (request.getParameter("type_entite") != null) {
+			request.getSession().setAttribute("type_entite", request.getParameter("type_entite"));
 		} else {
-			if (request.getSession().getAttribute("nom_entite") == null) {
+			if (request.getSession().getAttribute("type_entite") == null) {
 				// valeur par défaut
-				request.getSession().setAttribute("nom_entite", "");
+				request.getSession().setAttribute("type_entite", "");
 			}
 		}
-		nom_entite = (String) request.getSession().getAttribute("nom_entite");
+		type_entite = (String) request.getSession().getAttribute("type_entite");
 
 		List<MenuItem> menuItems = parametreDao.getMenuItemsFromDatabase();
         // Passer la liste des menus à la JSP
@@ -427,7 +427,7 @@ public class GestionParametre extends HttpServlet {
 						tag_statut = "En-cours"; // Statut par défaut
 					}
 					request.getSession().setAttribute("tag_statut", tag_statut);
-
+					System.out.println("tag statut:"+tag_statut);
 					try {
 						listeStatuts = statutDao.listerStatut();
 						request.getSession().setAttribute("listeStatuts", listeStatuts);

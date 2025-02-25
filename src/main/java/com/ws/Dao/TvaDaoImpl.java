@@ -225,7 +225,18 @@ public class TvaDaoImpl implements TvaDao {
         }
         return tvas;
     }
-
+    @Override
+    public List<Tva> listerTvaClient() throws DaoException {
+    	 return listerTva();
+    }
+    @Override
+    public List<Tva> listerTvaFournisseur() throws DaoException {
+    	 return listerTva();
+    }
+    @Override
+    public List<Tva> listerTvaSalarie() throws DaoException {
+        return listerTva();
+    }
     	// =================================================================================
 		// TROUVER TVA PAR ID
 		// =================================================================================

@@ -219,6 +219,20 @@ public class ActiviteDaoImpl implements ActiviteDao {
         return activites;
     }
 
+    @Override
+    public List<Activite> listerActiviteClient() throws DaoException {
+    	 return listerActivite();
+    }
+
+    @Override
+    public List<Activite> listerActiviteFournisseur() throws DaoException {
+    	 return listerActivite();
+    }
+
+    @Override
+    public List<Activite> listerActiviteSalarie() throws DaoException {
+        return listerActivite();
+    }
     	// =================================================================================
 		// TROUVER ACTIVITE PAR ID
 		// =================================================================================

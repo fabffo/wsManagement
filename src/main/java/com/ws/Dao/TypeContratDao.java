@@ -43,4 +43,10 @@ public interface TypeContratDao {
 			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
 			String type_entite);
 
+	List<TypeContrat> listerTypeContratClient() throws DaoException;
+
+	List<TypeContrat> listerTypeContratFournisseur() throws DaoException;
+
+	List<TypeContrat> listerTypeContratSalarie() throws DaoException;
+
 }

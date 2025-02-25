@@ -238,4 +238,8 @@ public class DaoFactory {
 	    public ActionDao getActionDao() {
 	        return new ActionDaoImpl(this);
 	    }
+	    // Récupération du Dao
+	    public TypeUtilisateurDao getTypeUtilisateurDao() {
+	        return new TypeUtilisateurDaoImpl(this);
+	    }
 }

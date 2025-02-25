@@ -196,6 +196,7 @@ public class ParametreDaoImpl implements ParametreDao {
                 if (parentId == 0) {
                     allMenuItems.add(menuItem); // Ajout des menus principaux
                 } else {
+                	System.out.println(id+label+url+parentId);
                     menuMap.get(parentId).addChild(menuItem); // Ajout des sous-menus
                 }
             }
@@ -366,7 +367,7 @@ public class ParametreDaoImpl implements ParametreDao {
 
             // Étape 6 : Si tout s'est bien passé, valider la transaction
             connection.commit();
-           
+
         } catch (Exception e) {
             // Étape 7 : Annuler la transaction en cas d'erreur
             if (connection != null) {

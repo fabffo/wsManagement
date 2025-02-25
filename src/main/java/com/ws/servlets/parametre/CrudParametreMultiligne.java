@@ -51,6 +51,7 @@ public class CrudParametreMultiligne extends HttpServlet {
 	int largeur_ecran ;
     private List<Object> listSelect; //liste pour zone en liste (options proposer en select)
     String parametre_nom;  // Nom du paramètre
+    String type_entite; // parametre type_entite
     //Class<?> clazz; //classe générique
     private String parametre_nom_programme; //nom du programme recu de gestion
 
@@ -96,8 +97,13 @@ public class CrudParametreMultiligne extends HttpServlet {
 
                 // Appel de la méthode pour récupérer les paramètres
                 //List<Map<String, Object>> listeChamps = parametreDao.getParametresChampsEcran(request.getParameter("parametre_nom_programme"), parametre_nom);
-                List<List<Map<String, Object>>> rows = parametreEcranDao.lireParametre_ecranCrud_multiligne(parametreSysteme.getId(), request.getParameter("parametre_nom_programme"), classe, parametre_nom);
-
+                List<List<Map<String, Object>>> rows = parametreEcranDao.lireParametre_ecranCrud_multiligne(parametreSysteme.getId(), request.getParameter("parametre_nom_programme"), classe, type_entite);
+                for (int i = 0; i < rows.size(); i++) {
+                    System.out.println("Row " + (i + 1) + ":");
+                    for (int j = 0; j < rows.get(i).size(); j++) {
+                        System.out.println("  Map " + (j + 1) + ": " + rows.get(i).get(j));
+                    }
+                }
                 // Passer la map 'validations' à la JSP
                 request.setAttribute("rows", rows);
 
@@ -195,6 +201,18 @@ public class CrudParametreMultiligne extends HttpServlet {
 
     // Initialisation de l'écran, récupération des détails de paramètres
     private void initEcran(HttpServletRequest request) throws DaoException, ServletException {
+    	// gestion du paramètre type d'entite  pour filter les contrats
+    			// =============================================================
+    			if (request.getParameter("type_entite") != null) {
+    				request.getSession().setAttribute("type_entite", request.getParameter("type_entite"));
+    			} else {
+    				if (request.getSession().getAttribute("type_entite") == null) {
+    					// valeur par défaut
+    					request.getSession().setAttribute("type_entite", "");
+    				}
+    			}
+    			type_entite = (String) request.getSession().getAttribute("type_entite");
+
         // Récupération du paramètre nom programme
                 if (request.getParameter("parametre_nom_programme") != null) {
                     parametre_nom_programme = request.getParameter("parametre_nom_programme");
@@ -273,51 +291,6 @@ public class CrudParametreMultiligne extends HttpServlet {
                }
         	Method method = daoInstance.getClass().getMethod(methodName, paramTypes);
         	 return method.invoke(daoInstance, params);
-    }
-
-
- // Méthode pour invoquer dynamiquement des méthodes du DAO de l'entité en cours
-    private Object invokeDynamicMethodList(String methodName) throws Exception {
-        Method method = daoInstancelist.getClass().getMethod(methodName);
-        return method.invoke(daoInstancelist);
-    }
-
- // Méthode générique pour ajouter une configuration dynamique de validation
-    private static void ajouterValidation(Map<String, Map<String, Object>> validations, String parametre_nom_programme,Object classe, String fieldName,
-                                          boolean required, boolean readonly, int minlength, int maxlength, String type, String step, String placeholder, String type_zone, int largeur_libelle, List<Object> listSelect ) throws Exception {
-        Map<String, Object> config = new HashMap<>();
-        config.put("required", required);
-        config.put("readonly", readonly);
-        config.put("minlength", minlength);
-        config.put("maxlength", maxlength);
-        config.put("type", type);
-        config.put("type_zone", type_zone);
-        config.put("largeur_libelle", largeur_libelle);
-        if (step != null) config.put("step", step);
-        if (placeholder != null) config.put("placeholder", placeholder);
-
-        if ( !("ajout".equals(parametre_nom_programme))) {
-        // Génération du nom de la méthode getter (par exemple, getNom pour 'nom')
-        String methodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        // Utilisation de la réflexion pour appeler dynamiquement la méthode getter
-        Class<?> clazz = classe.getClass();
-        Method method = clazz.getMethod(methodName);
-        // Récupérer la valeur du champ
-        Object valeur = method.invoke(classe);
-        // Ajouter la valeur au dictionnaire
-        config.put("valeur", valeur);
-        } else
-        {
-            // Ajouter la valeur au dictionnaire en défaut à blanc
-            config.put("valeur", "");
-        }
-
-        if ("select".equals(type_zone)) {
-        // Ajouter la liste sous un nom spécifique
-        config.put("listSelect", listSelect);
-        }
-        // Ajouter cette configuration à la map 'validations'
-        validations.put(fieldName, config);
     }
 
 }

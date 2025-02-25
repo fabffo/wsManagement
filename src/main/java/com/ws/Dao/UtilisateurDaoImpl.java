@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.ws.beans.Utilisateur;
@@ -63,7 +64,63 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         }
         return utilisateurs;
     }
-
+    @Override
+    public List<Utilisateur> listerUtilisateurClient() throws DaoException {
+        List<Utilisateur> utilisateurs = new ArrayList<>();
+        String sql = "SELECT id, Nom, libelle FROM utilisateur;";
+        try (Connection connexion = daoFactory.getConnection();
+             Statement statement = connexion.createStatement();
+             ResultSet resultat = statement.executeQuery(sql)) {
+            while (resultat.next()) {
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setId(resultat.getInt("id"));
+                utilisateur.setNom(resultat.getString("Nom"));
+                utilisateur.setLibelle(resultat.getString("libelle"));
+                utilisateurs.add(utilisateur);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements dans la table utilisateur"+ e);
+        }
+        return utilisateurs;
+    }
+    @Override
+    public List<Utilisateur> listerUtilisateurFournisseur() throws DaoException {
+        List<Utilisateur> utilisateurs = new ArrayList<>();
+        String sql = "SELECT id, Nom, libelle FROM utilisateur;";
+        try (Connection connexion = daoFactory.getConnection();
+             Statement statement = connexion.createStatement();
+             ResultSet resultat = statement.executeQuery(sql)) {
+            while (resultat.next()) {
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setId(resultat.getInt("id"));
+                utilisateur.setNom(resultat.getString("Nom"));
+                utilisateur.setLibelle(resultat.getString("libelle"));
+                utilisateurs.add(utilisateur);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements dans la table utilisateur"+ e);
+        }
+        return utilisateurs;
+    }
+    @Override
+    public List<Utilisateur> listerUtilisateurSalarie() throws DaoException {
+        List<Utilisateur> utilisateurs = new ArrayList<>();
+        String sql = "SELECT id, Nom, libelle FROM utilisateur;";
+        try (Connection connexion = daoFactory.getConnection();
+             Statement statement = connexion.createStatement();
+             ResultSet resultat = statement.executeQuery(sql)) {
+            while (resultat.next()) {
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setId(resultat.getInt("id"));
+                utilisateur.setNom(resultat.getString("Nom"));
+                utilisateur.setLibelle(resultat.getString("libelle"));
+                utilisateurs.add(utilisateur);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements dans la table utilisateur"+ e);
+        }
+        return utilisateurs;
+    }
     // CRUD LIRE UN ENREGISTREMENT SPECIFIQUE VIA SON ID
     @Override
     public Utilisateur trouverUtilisateur(Integer id) throws DaoException {
@@ -152,7 +209,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
 
     // Rechercher et lister les enregistrements
     @Override
-    public List<Utilisateur> rechercheUtilisateurs(int offset, int noOfRecords, String select_tri) throws DaoException {
+    public List<Utilisateur> rechercheUtilisateurs(Integer offset, Integer noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite) throws DaoException {
         List<Utilisateur> list = new ArrayList<>();
         String query = "SELECT SQL_CALC_FOUND_ROWS * FROM utilisateur ORDER BY " + select_tri + " LIMIT ?, ?";
         try (Connection connexion = daoFactory.getConnection();
@@ -184,10 +241,16 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
     public int getNoOfRecords() {
         return noOfRecords;
     }
+    @Override
+    public Integer getIntegerRecords() {
+    	Integer integerRecords = noOfRecords;
+        return integerRecords;
+    }
+
 
     // Rechercher et lister les enregistrements suivant like
     @Override
-    public List<Utilisateur> rechercheLikeUtilisateurs(int offset, int noOfRecords, String select_tri, String select_like) throws DaoException {
+    public List<Utilisateur> rechercheLikeUtilisateurs(Integer offset, Integer noOfRecords, String select_tri, String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite) throws DaoException {
         List<Utilisateur> list = new ArrayList<>();
         String query = "SELECT SQL_CALC_FOUND_ROWS * FROM utilisateur WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
         try (Connection connexion = daoFactory.getConnection();

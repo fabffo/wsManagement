@@ -28,6 +28,9 @@ public interface OrganisationDao {
 				LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 		List<Map<String, Object>> rechercheLikeOrganisations(Integer offset, Integer noOfRecords, String select_tri,
 				String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
-				String type_entite);;
+				String type_entite);
+		List<Organisation> listerOrganisationClient() throws DaoException;
+		List<Organisation> listerOrganisationFournisseur() throws DaoException;
+		List<Organisation> listerOrganisationSalarie() throws DaoException;;
 
 }

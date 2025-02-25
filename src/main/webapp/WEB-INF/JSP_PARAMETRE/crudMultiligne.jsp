@@ -36,7 +36,7 @@
 				class="col-lg-${largeur_ecran}-md-${largeur_ecran} col-sm-${largeur_ecran} container justify-content-center card">
 
 				<h1 class="text-center btn btn-dark">${parametre_nom_programme}
-					${param.parametre_nom} ${param.entite} ${param.classe_id}</h1>
+					${param.parametre_nom} ${type_entite} ${param.classe_id}</h1>
 				<form method="POST"
 					action="crudParametreMultiligne?parametre_nom_programme=${parametre_nom_programme}&classe_id=${param.classe_id}">
 

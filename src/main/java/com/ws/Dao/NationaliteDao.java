@@ -41,4 +41,10 @@ public interface NationaliteDao {
 	List<Map<String, Object>> rechercheNationalites(Integer offset, Integer noOfRecords, String select_tri,
 			LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 
+	List<Nationalite> listerNationaliteSalarie() throws DaoException;
+
+	List<Nationalite> listerNationaliteFournisseur() throws DaoException;
+
+	List<Nationalite> listerNationaliteClient() throws DaoException;
+
 }

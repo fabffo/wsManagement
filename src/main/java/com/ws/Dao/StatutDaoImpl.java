@@ -221,6 +221,19 @@ public class StatutDaoImpl implements StatutDao {
         }
         return statuts;
     }
+    @Override
+    public List<Statut> listerStatutClient() throws DaoException {
+        return listerStatut();
+    }
+    @Override
+    public List<Statut> listerStatutFournisseur() throws DaoException {
+        return listerStatut();
+    }
+
+    @Override
+    public List<Statut> listerStatutSalarie() throws DaoException {
+    	return listerStatut();
+    }
 
     	// =================================================================================
 		// TROUVER STATUT PAR ID

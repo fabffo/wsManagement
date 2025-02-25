@@ -271,6 +271,132 @@ public class OrganisationDaoImpl implements OrganisationDao {
         return organisations;
     }
 
+    @Override
+    public List<Organisation> listerOrganisationClient() throws DaoException {
+        List<Organisation> organisations = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT organisation.id, organisation.entite, raison_sociale, adresse, code_postal, ville, pays, siren, siret, code_naf, tva, metier, telephone, email, relation FROM organisation "
+            		+ "inner join entite on entite.id=organisation.entite where entite.nom='Client'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Organisation organisation = new Organisation();
+                organisation.setId(resultat.getInt("organisation.id"));
+                organisation.setEntite(resultat.getInt("organisation.entite"));
+                organisation.setRaison_sociale(resultat.getString("raison_sociale"));
+                organisation.setNom(resultat.getString("raison_sociale"));
+				organisation.setAdresse(resultat.getString("adresse"));
+				organisation.setCode_postal(resultat.getString("code_postal"));
+				organisation.setVille(resultat.getString("ville"));
+				organisation.setPays(resultat.getString("pays"));
+				organisation.setSiren(resultat.getString("siren"));
+				organisation.setSiret(resultat.getString("siret"));
+				organisation.setCode_naf(resultat.getString("code_naf"));
+				organisation.setTva(resultat.getInt("tva"));
+				organisation.setMetier(resultat.getInt("metier"));
+				organisation.setTelephone(resultat.getString("telephone"));
+				organisation.setEmail(resultat.getString("email"));
+				organisation.setRelation(resultat.getInt("relation"));
+                organisations.add(organisation);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Organisation"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return organisations;
+    }
+
+    @Override
+    public List<Organisation> listerOrganisationFournisseur() throws DaoException {
+        List<Organisation> organisations = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT organisation.id, organisation.entite, raison_sociale, adresse, code_postal, ville, pays, siren, siret, code_naf, tva, metier, telephone, email, relation FROM organisation"
+            		+ " inner join entite on entite.id=organisation.entite where entite.nom='Fournisseur'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Organisation organisation = new Organisation();
+                organisation.setId(resultat.getInt("organisation.id"));
+                organisation.setEntite(resultat.getInt("organisation.entite"));
+                organisation.setRaison_sociale(resultat.getString("raison_sociale"));
+                organisation.setNom(resultat.getString("raison_sociale"));
+				organisation.setAdresse(resultat.getString("adresse"));
+				organisation.setCode_postal(resultat.getString("code_postal"));
+				organisation.setVille(resultat.getString("ville"));
+				organisation.setPays(resultat.getString("pays"));
+				organisation.setSiren(resultat.getString("siren"));
+				organisation.setSiret(resultat.getString("siret"));
+				organisation.setCode_naf(resultat.getString("code_naf"));
+				organisation.setTva(resultat.getInt("tva"));
+				organisation.setMetier(resultat.getInt("metier"));
+				organisation.setTelephone(resultat.getString("telephone"));
+				organisation.setEmail(resultat.getString("email"));
+				organisation.setRelation(resultat.getInt("relation"));
+                organisations.add(organisation);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Organisation"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return organisations;
+    }
+
+    @Override
+    public List<Organisation> listerOrganisationSalarie() throws DaoException {
+        List<Organisation> organisations = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT organisation.id, organisation.entite, raison_sociale, adresse, code_postal, ville, pays, siren, siret, code_naf, tva, metier, telephone, email, relation FROM organisation"
+            		+ " inner join entite on entite.id=organisation.entite where entite.nom='Salarie'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Organisation organisation = new Organisation();
+                organisation.setId(resultat.getInt("organisation.id"));
+                organisation.setEntite(resultat.getInt("organisation.entite"));
+                organisation.setRaison_sociale(resultat.getString("raison_sociale"));
+                organisation.setNom(resultat.getString("raison_sociale"));
+				organisation.setAdresse(resultat.getString("adresse"));
+				organisation.setCode_postal(resultat.getString("code_postal"));
+				organisation.setVille(resultat.getString("ville"));
+				organisation.setPays(resultat.getString("pays"));
+				organisation.setSiren(resultat.getString("siren"));
+				organisation.setSiret(resultat.getString("siret"));
+				organisation.setCode_naf(resultat.getString("code_naf"));
+				organisation.setTva(resultat.getInt("tva"));
+				organisation.setMetier(resultat.getInt("metier"));
+				organisation.setTelephone(resultat.getString("telephone"));
+				organisation.setEmail(resultat.getString("email"));
+				organisation.setRelation(resultat.getInt("relation"));
+                organisations.add(organisation);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Organisation"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return organisations;
+    }
+
     	// =================================================================================
 		// TROUVER ORGANISATION PAR ID
 		// =================================================================================

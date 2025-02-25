@@ -28,6 +28,9 @@ public interface RelationDao {
 				LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 		List<Map<String, Object>> rechercheLikeRelations(Integer offset, Integer noOfRecords, String select_tri,
 				String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
-				String type_entite);;
+				String type_entite);
+		List<Relation> listerRelationSalarie() throws DaoException;
+		List<Relation> listerRelationFournisseur() throws DaoException;
+		List<Relation> listerRelationClient() throws DaoException;;
 
 }

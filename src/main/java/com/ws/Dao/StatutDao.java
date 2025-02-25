@@ -42,4 +42,10 @@ public interface StatutDao {
 			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
 			String type_entite);
 
+	List<Statut> listerStatutClient() throws DaoException;
+
+	List<Statut> listerStatutFournisseur() throws DaoException;
+
+	List<Statut> listerStatutSalarie() throws DaoException;
+
 }

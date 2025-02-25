@@ -43,4 +43,10 @@ public interface EntiteDao {
 			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
 			String type_entite);
 
+	List<Entite> listerEntiteSalarie() throws DaoException;
+
+	List<Entite> listerEntiteFournisseur() throws DaoException;
+
+	List<Entite> listerEntiteClient() throws DaoException;
+
 }

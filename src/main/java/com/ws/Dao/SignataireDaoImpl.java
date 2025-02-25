@@ -219,6 +219,20 @@ public class SignataireDaoImpl implements SignataireDao {
         return signataires;
     }
 
+    @Override
+    public List<Signataire> listerSignataireClient() throws DaoException {
+    	return listerSignataire();
+    }
+
+    @Override
+    public List<Signataire> listerSignataireFournisseur() throws DaoException {
+    	return listerSignataire();
+    }
+
+    @Override
+    public List<Signataire> listerSignataireSalarie() throws DaoException {
+        return listerSignataire();
+    }
     	// =================================================================================
 		// TROUVER ACTIVITE PAR ID
 		// =================================================================================

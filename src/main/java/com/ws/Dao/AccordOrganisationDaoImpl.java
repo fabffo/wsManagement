@@ -398,9 +398,13 @@ public class AccordOrganisationDaoImpl implements AccordOrganisationDao {
         		ww_where =" where statut.id="+id_statut;
         }
         }
-        System.out.println("recherche type_entite"+type_entite);
         if  (!type_entite.equals("")) {
+        	if (!ww_where.equals("")) {
+        		ww_where = ww_where + " and entite.nom='"+type_entite+"'";
+        	}
+        	else {
         	ww_where = " where entite.nom='"+type_entite+"'";
+        	}
         }
         try {
         	connexion = daoFactory.getConnection();
@@ -411,7 +415,6 @@ public class AccordOrganisationDaoImpl implements AccordOrganisationDao {
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);
-            System.out.println(query);
             rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
@@ -481,7 +484,6 @@ public class AccordOrganisationDaoImpl implements AccordOrganisationDao {
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);
-            System.out.println(rs);
             rs = preparedStatement.executeQuery();
 
             while (rs.next()) {

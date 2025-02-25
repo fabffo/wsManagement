@@ -30,7 +30,7 @@ public final class ControleDonneesParametreMultiligne {
 	private String parametre_nom;
 	private String comWsBeansEntite;
 	private String trouverNomEntite;
-	private String nom_entite;
+	private String type_entite;
 	private ParametreDao parametreDao; // DAO pour les paramètres
 	private ParametreEcranDao parametreEcranDao; // DAO pour les paramètres
 	ParametreSysteme parametreSysteme;
@@ -69,15 +69,15 @@ public final class ControleDonneesParametreMultiligne {
 						}
 					}
 
-					if (request.getParameter("nom_entite") != null) {
-						request.getSession().setAttribute("nom_entite", request.getParameter("nom_entite"));
+					if (request.getParameter("type_entite") != null) {
+						request.getSession().setAttribute("type_entite", request.getParameter("type_entite"));
 					} else {
-						if (request.getSession().getAttribute("nom_entite") == null) {
+						if (request.getSession().getAttribute("type_entite") == null) {
 							// valeur par défaut
-							request.getSession().setAttribute("nom_entite", "");
+							request.getSession().setAttribute("type_entite", "");
 						}
 					}
-					nom_entite = (String) request.getSession().getAttribute("nom_entite");
+					type_entite = (String) request.getSession().getAttribute("type_entite");
 
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			daoFactory = DaoFactory.getInstance();
@@ -207,7 +207,7 @@ public final class ControleDonneesParametreMultiligne {
             // Passer la map 'validations' en attribut de requête pour la JSP
             request.setAttribute("validations", validations);
 
-            List<List<Map<String, Object>>> rows = parametreEcranDao.lireParametre_ecranCrud_multiligne(parametreSysteme.getId(), request.getParameter("parametre_nom_programme"), entiteInstance, nom_entite);
+            List<List<Map<String, Object>>> rows = parametreEcranDao.lireParametre_ecranCrud_multiligne(parametreSysteme.getId(), request.getParameter("parametre_nom_programme"), entiteInstance, type_entite);
             // Passer la map 'validations' à la JSP
             request.setAttribute("rows", rows);
 

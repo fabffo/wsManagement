@@ -106,7 +106,7 @@ public class ActionDaoImpl implements ActionDao {
         try {
         	connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
-            String sql = "INSERT INTO action(nom_programme, action, disponible, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?);";
+            String sql = "INSERT INTO action(nom_programme, action, disponible, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?);";
             preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setString(1, action.getNom_programme());
             preparedStatement.setString(2, action.getAction());
@@ -362,11 +362,9 @@ public class ActionDaoImpl implements ActionDao {
         	 String sql = "SELECT action, disponible FROM action WHERE nom_programme = ?";
             preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setString(1, parametreNomProgramme);
-            System.out.println(preparedStatement);
             resultat = preparedStatement.executeQuery();
             while (resultat.next()) {
                 actionsDisponibles.put(resultat.getString("action"), resultat.getString("disponible"));
-                System.out.println(actionsDisponibles.toString());
             }
         } catch (SQLException e) {
         } finally {

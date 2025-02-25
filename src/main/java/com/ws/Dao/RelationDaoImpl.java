@@ -271,6 +271,18 @@ public class RelationDaoImpl implements RelationDao {
         }
         return relations;
     }
+    @Override
+    public List<Relation> listerRelationClient() throws DaoException {
+    	return listerRelation();
+    }
+    @Override
+    public List<Relation> listerRelationFournisseur() throws DaoException {
+    	return listerRelation();
+    }
+    @Override
+    public List<Relation> listerRelationSalarie() throws DaoException {
+       return listerRelation();
+    }
 
     	// =================================================================================
 		// TROUVER RELATION PAR ID

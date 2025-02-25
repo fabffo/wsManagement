@@ -7,6 +7,7 @@
 
 package com.ws.Dao;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.ws.beans.Utilisateur;
@@ -19,7 +20,15 @@ public interface UtilisateurDao {
 	    void copierUtilisateur( Utilisateur utilisateur )throws DaoException;
 	    void supprimerUtilisateur( Integer id )throws DaoException;
 	    boolean trouverNomUtilisateur (String nom) throws DaoException;
-	    public List<Utilisateur> rechercheUtilisateurs(int offset, int noOfRecords, String select_tri) throws DaoException;
 	    public int getNoOfRecords();
-	    public List<Utilisateur> rechercheLikeUtilisateurs(int offset, int noOfRecords, String select_tri, String select_like) throws DaoException;
+	    List<Utilisateur> listerUtilisateurSalarie() throws DaoException;
+		List<Utilisateur> listerUtilisateurClient() throws DaoException;
+		List<Utilisateur> listerUtilisateurFournisseur() throws DaoException;
+		List<Utilisateur> rechercheUtilisateurs(Integer offset, Integer noOfRecords, String select_tri,
+				LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite)
+				throws DaoException;
+		List<Utilisateur> rechercheLikeUtilisateurs(Integer offset, Integer noOfRecords, String select_tri,
+				String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
+				String type_entite) throws DaoException;
+		Integer getIntegerRecords();
 }

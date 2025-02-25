@@ -28,6 +28,9 @@ public interface MetierDao {
 				LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 		List<Map<String, Object>> rechercheLikeMetiers(Integer offset, Integer noOfRecords, String select_tri,
 				String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
-				String type_entite);;
+				String type_entite);
+		List<Metier> listerMetierSalarie() throws DaoException;
+		List<Metier> listerMetierFournisseur() throws DaoException;
+		List<Metier> listerMetierClient() throws DaoException;;
 
 }

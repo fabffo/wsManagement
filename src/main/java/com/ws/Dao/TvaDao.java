@@ -30,4 +30,7 @@ public interface TvaDao {
 		List<Map<String, Object>> rechercheLikeTvas(Integer offset, Integer noOfRecords, String select_tri,
 				String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
 				String type_entite);
+		List<Tva> listerTvaSalarie() throws DaoException;
+		List<Tva> listerTvaFournisseur() throws DaoException;
+		List<Tva> listerTvaClient() throws DaoException;
 }

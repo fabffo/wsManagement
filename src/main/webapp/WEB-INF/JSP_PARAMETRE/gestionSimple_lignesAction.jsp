@@ -18,27 +18,27 @@
                 </c:forEach>
                 <td>
                  <c:if test="${actionsDisponibles['modifier']=='True'}">
-                    <a href="crudParametreMultiligne?parametre_nom_programme=maj&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&parametre_entite=${nom_entite}" class="btn En-cours btn-link p-2">
+                    <a href="crudParametreMultiligne?parametre_nom_programme=maj&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&type_entite=${type_entite}" class="btn En-cours btn-link p-2">
                         <i class="bi bi-pencil-square" data-toggle="tooltip" data-placement="top" title="MAJ"></i>
                     </a>
                       </c:if>
                       <c:if test="${actionsDisponibles['copier']=='True'}">
-                    <a href="crudParametreMultiligne?parametre_nom_programme=copie&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&parametre_entite=${nom_entite}" class="btn En-cours btn-link p-2">
+                    <a href="crudParametreMultiligne?parametre_nom_programme=copie&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&type_entite=${type_entite}" class="btn En-cours btn-link p-2">
                         <i class="bi bi-book-half" data-toggle="tooltip" data-placement="top" title="COPIER"></i>
                     </a>
                      </c:if>
                      <c:if test="${actionsDisponibles['visualiser']=='True'}">
-                    <a href="crudParametreMultiligne?parametre_nom_programme=visualisation&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&parametre_entite=${nom_entite}" class="btn Visualisé btn-link btn p-2" data-toggle="tooltip" data-placement="top" title="VISUALISER">
+                    <a href="crudParametreMultiligne?parametre_nom_programme=visualisation&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&type_entite=${type_entite}" class="btn Visualisé btn-link btn p-2" data-toggle="tooltip" data-placement="top" title="VISUALISER">
                         <i class="bi bi-eye"></i>
                     </a>
                     </c:if>
                     <c:if test="${actionsDisponibles['supprimer']=='True'}">
-                    <a href="crudParametreMultiligne?parametre_nom_programme=suppression&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&parametre_entite=${nom_entite}" class="btn Terminé btn-link btn p-2">
+                    <a href="crudParametreMultiligne?parametre_nom_programme=suppression&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&type_entite=${type_entite}" class="btn Terminé btn-link btn p-2">
                         <i class="bi bi-trash" data-toggle="tooltip" data-placement="top" title="SUPPRIMER"></i>
                     </a>
                    </c:if>
                     <c:if test="${actionsDisponibles['renommer']=='True'}">
-                    <a href="crudParametreMultiligne?parametre_nom_programme=renommage&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&parametre_entite=${nom_entite}" class="btn En-cours btn-link btn p-2">
+                    <a href="crudParametreMultiligne?parametre_nom_programme=renommage&classe_id=${entite.id}&currentPage=${currentPage}&parametre_nom=${parametre_nom}&type_entite=${type_entite}" class="btn En-cours btn-link btn p-2">
                         <i class="bi bi-pencil-fill" data-toggle="tooltip" data-placement="top" title="RENOMMER"></i>
                     </a>
                     </c:if>

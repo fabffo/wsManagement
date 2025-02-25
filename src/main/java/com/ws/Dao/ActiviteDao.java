@@ -42,4 +42,10 @@ public interface ActiviteDao {
 	List<Map<String, Object>> rechercheActivites(Integer offset, Integer noOfRecords, String select_tri,
 			LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 
+	List<Activite> listerActiviteClient() throws DaoException;
+
+	List<Activite> listerActiviteFournisseur() throws DaoException;
+
+	List<Activite> listerActiviteSalarie() throws DaoException;
+
 }

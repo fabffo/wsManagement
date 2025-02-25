@@ -228,8 +228,9 @@ public class ParametreEcranDaoImpl implements ParametreEcranDao {
 	}
 
 	@Override
-	public List<List<Map<String, Object>>> lireParametre_ecranCrud_multiligne(int id_parametreSysteme, String parametre_nom_programme, Object classe, String entite) throws SQLException, Exception {
+	public List<List<Map<String, Object>>> lireParametre_ecranCrud_multiligne(int id_parametreSysteme, String parametre_nom_programme, Object classe, String type_entite) throws SQLException, Exception {
 	    String sql = "SELECT * FROM Parametre_ecrancrud_ligne WHERE parametreSysteme = ? AND nom_programme = ? ORDER BY numero_ligne, numero_champ";
+
 	    List<List<Map<String, Object>>> rows = new ArrayList<>();
 	    String nomChamp = null;
 
@@ -238,7 +239,7 @@ public class ParametreEcranDaoImpl implements ParametreEcranDao {
 
 	        statement.setInt(1, id_parametreSysteme);
 	        statement.setString(2, parametre_nom_programme);
-
+	        System.out.println(statement);
 	        try (ResultSet resultSet = statement.executeQuery()) {
 	            List<Map<String, Object>> currentRow = null;
 	            int currentNumero = -1;
@@ -258,9 +259,6 @@ public class ParametreEcranDaoImpl implements ParametreEcranDao {
 
 	                // Si le champ est une entité on vérifie et on remplace par le nom de l'entité client, fournisseur...
 	                nomChamp = (String) champ.get("nom_champ");
-                    if (nomChamp.equals("Entite")) {
-                    	nomChamp= entite;
-                    }
 	                // Gérer la valeur du champ via réflexion si nécessaire
 	                if (!"ajout".equals(parametre_nom_programme)) {
 	                    champ.put("valeur", resolveFieldValue(classe, nomChamp));
@@ -270,9 +268,16 @@ public class ParametreEcranDaoImpl implements ParametreEcranDao {
 
 	                // Gérer les listes de sélection si applicable
 	                if ("select".equals(champ.get("type_zone"))) {
-
-	                    String nomEntite = nomChamp.substring(0, 1).toUpperCase() + nomChamp.substring(1);
-	                    champ.put("listSelect", obtenirListSelect(nomEntite));
+	                	String listNomEntite = "";
+	                	String nomEntite = nomChamp.substring(0, 1).toUpperCase() + nomChamp.substring(1);
+	                	 if (!type_entite.equals("")) {
+	                     listNomEntite = nomEntite+type_entite;
+	                	 }
+	                	 else
+	                	 {
+		                     listNomEntite = nomEntite;
+		                	 }
+	                    champ.put("listSelect", obtenirListSelect(nomEntite, listNomEntite));
 	                }
 
 	                currentRow.add(champ);
@@ -309,9 +314,9 @@ public class ParametreEcranDaoImpl implements ParametreEcranDao {
 	    return  method.invoke(classe);
 	}
 
-	private List<Object> obtenirListSelect(String nomEntite) throws Exception {
+	private List<Object> obtenirListSelect(String nomEntite, String listNomEntite) throws Exception {
 	    // Générer dynamiquement le nom de la méthode DAO
-	    String nomMethodelist = "lister" + nomEntite;
+	    String nomMethodelist = "lister" + listNomEntite;
 
 	    // Obtenir l'instance du DAO pour l'entité
 	    Object daoInstance = daoFactory.getClass()

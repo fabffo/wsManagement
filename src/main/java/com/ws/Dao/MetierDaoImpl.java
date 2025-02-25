@@ -225,7 +225,18 @@ public class MetierDaoImpl implements MetierDao {
         }
         return metiers;
     }
-
+    @Override
+    public List<Metier> listerMetierClient() throws DaoException {
+    	 return listerMetier();
+    }
+    @Override
+    public List<Metier> listerMetierFournisseur() throws DaoException {
+    	 return listerMetier();
+    }
+    @Override
+    public List<Metier> listerMetierSalarie() throws DaoException {
+        return listerMetier();
+    }
     	// =================================================================================
 		// TROUVER METIER PAR ID
 		// =================================================================================

@@ -219,6 +219,20 @@ public class NationaliteDaoImpl implements NationaliteDao {
         return nationalites;
     }
 
+    @Override
+    public List<Nationalite> listerNationaliteClient() throws DaoException {
+    	return listerNationalite();
+    }
+
+    @Override
+    public List<Nationalite> listerNationaliteFournisseur() throws DaoException {
+        return listerNationalite();
+    }
+
+    @Override
+    public List<Nationalite> listerNationaliteSalarie() throws DaoException {
+    	return listerNationalite();
+    }
     	// =================================================================================
 		// TROUVER ACTIVITE PAR ID
 		// =================================================================================
