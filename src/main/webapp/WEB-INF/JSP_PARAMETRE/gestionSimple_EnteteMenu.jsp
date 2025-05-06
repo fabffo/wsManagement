@@ -57,7 +57,7 @@
 
 <div class="container">
     <div class="row">
-        <h1 class="text-center">Gestion ${parametre_nom} ${type_entite} ${type_entete}
+        <h1 class="text-center">Gestion ${parametre_nom} ${type_entite}
 		<c:if test="${type_entete == 'statut'}">
 			<form method="GET" class="btn d-inline">
 				<select name="tag_statut" id="tag_statut" class="${tag_statut}"

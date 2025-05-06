@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ws.beans.Organisation;
 import com.ws.beans.Personnel;
 import com.ws.beans.Signataire;
 
@@ -140,6 +141,184 @@ public class PersonnelDaoImpl implements PersonnelDao {
 		return personnels;
 	}
 
+    @Override
+    public List<Personnel> listerPersonnelClient() throws DaoException {
+        List<Personnel> personnels = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT personnel.id, civilite, personnel.nom, personnel.prenom, adresse, code_postal, ville, pays, telephone, email, telephone_secondaire, email_secondaire, date_naissance, nationalite, activite, entite, signataire, utilisateur, metier FROM personnel "
+            		+ "inner join entite on entite.id=personnel.entite where entite.nom='Client'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Personnel personnel = new Personnel();
+                personnel.setId(resultat.getInt("id"));
+				personnel.setCivilite(resultat.getString("civilite"));
+				personnel.setNom(resultat.getString("nom"));
+				personnel.setPrenom(resultat.getString("prenom"));
+				personnel.setAdresse(resultat.getString("adresse"));
+				personnel.setCode_postal(resultat.getString("code_postal"));
+				personnel.setVille(resultat.getString("ville"));
+				personnel.setPays(resultat.getString("pays"));
+				personnel.setTelephone(resultat.getString("telephone"));
+				personnel.setTelephone_secondaire(resultat.getString("telephone_secondaire"));
+				personnel.setEmail(resultat.getString("email"));
+				personnel.setEmail_secondaire(resultat.getString("email_secondaire"));
+				personnel.setDate_naissance(resultat.getString("date_naissance"));
+				personnel.setNationalite(resultat.getInt("nationalite"));
+				personnel.setActivite(resultat.getInt("activite"));
+				personnel.setEntite(resultat.getInt("entite"));
+				personnel.setSignataire(resultat.getInt("signataire"));
+				personnel.setUtilisateur(resultat.getInt("utilisateur"));
+				personnel.setMetier(resultat.getInt("metier"));
+                personnels.add(personnel);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Personnel"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return personnels;
+    }
+
+    @Override
+    public List<Personnel> listerPersonnelFournisseur() throws DaoException {
+        List<Personnel> personnels = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT personnel.id, civilite, personnel.nom, personnel.prenom, adresse, code_postal, ville, pays, telephone, email, telephone_secondaire, email_secondaire, date_naissance, nationalite, activite, entite, signataire, utilisateur, metier FROM personnel "
+            		+ "inner join entite on entite.id=personnel.entite where entite.nom='Fournisseur'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Personnel personnel = new Personnel();
+                personnel.setId(resultat.getInt("id"));
+				personnel.setCivilite(resultat.getString("civilite"));
+				personnel.setNom(resultat.getString("nom"));
+				personnel.setPrenom(resultat.getString("prenom"));
+				personnel.setAdresse(resultat.getString("adresse"));
+				personnel.setCode_postal(resultat.getString("code_postal"));
+				personnel.setVille(resultat.getString("ville"));
+				personnel.setPays(resultat.getString("pays"));
+				personnel.setTelephone(resultat.getString("telephone"));
+				personnel.setTelephone_secondaire(resultat.getString("telephone_secondaire"));
+				personnel.setEmail(resultat.getString("email"));
+				personnel.setEmail_secondaire(resultat.getString("email_secondaire"));
+				personnel.setDate_naissance(resultat.getString("date_naissance"));
+				personnel.setNationalite(resultat.getInt("nationalite"));
+				personnel.setActivite(resultat.getInt("activite"));
+				personnel.setEntite(resultat.getInt("entite"));
+				personnel.setSignataire(resultat.getInt("signataire"));
+				personnel.setUtilisateur(resultat.getInt("utilisateur"));
+				personnel.setMetier(resultat.getInt("metier"));
+                personnels.add(personnel);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Personnel"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return personnels;
+    }
+
+    @Override
+    public List<Personnel> listerPersonnelSalarie() throws DaoException {
+        List<Personnel> personnels = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT personnel.id, civilite, personnel.nom, personnel.prenom, adresse, code_postal, ville, pays, telephone, email, telephone_secondaire, email_secondaire, date_naissance, nationalite, activite, entite, signataire, utilisateur, metier FROM personnel "
+            		+ "inner join entite on entite.id=personnel.entite where entite.nom='Salarie'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Personnel personnel = new Personnel();
+                personnel.setId(resultat.getInt("id"));
+				personnel.setCivilite(resultat.getString("civilite"));
+				personnel.setNom(resultat.getString("nom"));
+				personnel.setPrenom(resultat.getString("prenom"));
+				personnel.setAdresse(resultat.getString("adresse"));
+				personnel.setCode_postal(resultat.getString("code_postal"));
+				personnel.setVille(resultat.getString("ville"));
+				personnel.setPays(resultat.getString("pays"));
+				personnel.setTelephone(resultat.getString("telephone"));
+				personnel.setTelephone_secondaire(resultat.getString("telephone_secondaire"));
+				personnel.setEmail(resultat.getString("email"));
+				personnel.setEmail_secondaire(resultat.getString("email_secondaire"));
+				personnel.setDate_naissance(resultat.getString("date_naissance"));
+				personnel.setNationalite(resultat.getInt("nationalite"));
+				personnel.setActivite(resultat.getInt("activite"));
+				personnel.setEntite(resultat.getInt("entite"));
+				personnel.setSignataire(resultat.getInt("signataire"));
+				personnel.setUtilisateur(resultat.getInt("utilisateur"));
+				personnel.setMetier(resultat.getInt("metier"));
+				personnels.add(personnel);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Personnel"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return personnels;
+    }
+    @Override
+    public List<Personnel> listerPersonnelInterne() throws DaoException {
+        List<Personnel> personnels = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT personnel.id, civilite, personnel.nom, personnel.prenom, adresse, code_postal, ville, pays, telephone, email, telephone_secondaire, email_secondaire, date_naissance, nationalite, activite, entite, signataire, utilisateur, metier FROM personnel "
+            		+ "inner join entite on entite.id=personnel.entite where entite.nom='Interne'"
+            		+ ";";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Personnel personnel = new Personnel();
+                personnel.setId(resultat.getInt("id"));
+				personnel.setCivilite(resultat.getString("civilite"));
+				personnel.setNom(resultat.getString("nom"));
+				personnel.setPrenom(resultat.getString("prenom"));
+				personnel.setAdresse(resultat.getString("adresse"));
+				personnel.setCode_postal(resultat.getString("code_postal"));
+				personnel.setVille(resultat.getString("ville"));
+				personnel.setPays(resultat.getString("pays"));
+				personnel.setTelephone(resultat.getString("telephone"));
+				personnel.setTelephone_secondaire(resultat.getString("telephone_secondaire"));
+				personnel.setEmail(resultat.getString("email"));
+				personnel.setEmail_secondaire(resultat.getString("email_secondaire"));
+				personnel.setDate_naissance(resultat.getString("date_naissance"));
+				personnel.setNationalite(resultat.getInt("nationalite"));
+				personnel.setActivite(resultat.getInt("activite"));
+				personnel.setEntite(resultat.getInt("entite"));
+				personnel.setSignataire(resultat.getInt("signataire"));
+				personnel.setUtilisateur(resultat.getInt("utilisateur"));
+				personnel.setMetier(resultat.getInt("metier"));
+                personnels.add(personnel);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Personnel"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return personnels;
+    }
 	// CRUD LIRE UN ENREGISTREMENT SPECIFIQUE VIA SON ID
 	@Override
 	public Personnel trouverPersonnel(Integer id) throws DaoException {

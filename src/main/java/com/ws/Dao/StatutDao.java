@@ -48,4 +48,6 @@ public interface StatutDao {
 
 	List<Statut> listerStatutSalarie() throws DaoException;
 
+	List<Statut> listerStatutInterne() throws DaoException;
+
 }

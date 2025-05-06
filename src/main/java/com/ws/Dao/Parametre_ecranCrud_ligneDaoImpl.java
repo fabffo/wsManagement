@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Parametre_ecranCrud_ligne;
 import com.ws.configuration.DatasourceH;
 
@@ -36,7 +36,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
         try {
             connexion  = daoFactory.getConnection();
             connexion.setAutoCommit(false);
-            String sql = "INSERT INTO parametre_ecranCrud_ligne(parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            String sql = "INSERT INTO parametre_ecranCrud_ligne(parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, hidden, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
             preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setInt(1, parametre_ecranCrud_ligne.getParametreSysteme());
             preparedStatement.setInt(2, parametre_ecranCrud_ligne.getNumero_ligne());
@@ -46,16 +46,17 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
             preparedStatement.setString(6, parametre_ecranCrud_ligne.getRequired());
             preparedStatement.setString(7, parametre_ecranCrud_ligne.getReadonly());
             preparedStatement.setString(8, parametre_ecranCrud_ligne.getDisabled());
-            preparedStatement.setInt(9, parametre_ecranCrud_ligne.getMinlength());
-            preparedStatement.setInt(10, parametre_ecranCrud_ligne.getMaxlength());
-            preparedStatement.setString(11, parametre_ecranCrud_ligne.getType());
-            preparedStatement.setString(12, parametre_ecranCrud_ligne.getStep());
-            preparedStatement.setString(13, parametre_ecranCrud_ligne.getPlaceholder());
-            preparedStatement.setString(14, parametre_ecranCrud_ligne.getType_zone());
-            preparedStatement.setInt(15, parametre_ecranCrud_ligne.getLargeur_libelle());
-            preparedStatement.setString(16, "ParametreSys_entete");
-            preparedStatement.setString(17, dateTime);
-            preparedStatement.setString(18, System.getProperty("user.name"));
+            preparedStatement.setString(9, parametre_ecranCrud_ligne.getHidden());
+            preparedStatement.setInt(10, parametre_ecranCrud_ligne.getMinlength());
+            preparedStatement.setInt(11, parametre_ecranCrud_ligne.getMaxlength());
+            preparedStatement.setString(12, parametre_ecranCrud_ligne.getType());
+            preparedStatement.setString(13, parametre_ecranCrud_ligne.getStep());
+            preparedStatement.setString(14, parametre_ecranCrud_ligne.getPlaceholder());
+            preparedStatement.setString(15, parametre_ecranCrud_ligne.getType_zone());
+            preparedStatement.setInt(16, parametre_ecranCrud_ligne.getLargeur_libelle());
+            preparedStatement.setString(17, "ParametreSys_entete");
+            preparedStatement.setString(18, dateTime);
+            preparedStatement.setString(19, System.getProperty("user.name"));
             preparedStatement.executeUpdate();
             connexion.commit();
         } catch (SQLException e) {
@@ -83,7 +84,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
         try {
         	connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
-            String sql = "UPDATE parametre_ecranCrud_ligne SET parametreSysteme=?, numero_ligne=?, numero_champ=?, nom_programme=?, nom_champ=?, required=?, readonly=?, disabled=?, minlength=?, maxlength=?, type=?, step=?, placeholder=?, type_zone=?, largeur_libelle=?, pgmmodification=?, datemodification=?, usermodification=? WHERE id=?;";
+            String sql = "UPDATE parametre_ecranCrud_ligne SET parametreSysteme=?, numero_ligne=?, numero_champ=?, nom_programme=?, nom_champ=?, required=?, readonly=?, disabled=?, hidden=?, minlength=?, maxlength=?, type=?, step=?, placeholder=?, type_zone=?, largeur_libelle=?, pgmmodification=?, datemodification=?, usermodification=? WHERE id=?;";
             preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setInt(1, parametre_ecranCrud_ligne.getParametreSysteme());
             preparedStatement.setInt(2, parametre_ecranCrud_ligne.getNumero_ligne());
@@ -93,17 +94,18 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
             preparedStatement.setString(6, parametre_ecranCrud_ligne.getRequired());
             preparedStatement.setString(7, parametre_ecranCrud_ligne.getReadonly());
             preparedStatement.setString(8, parametre_ecranCrud_ligne.getDisabled());
-            preparedStatement.setInt(9, parametre_ecranCrud_ligne.getMinlength());
-            preparedStatement.setInt(10, parametre_ecranCrud_ligne.getMaxlength());
-            preparedStatement.setString(11, parametre_ecranCrud_ligne.getType());
-            preparedStatement.setString(12, parametre_ecranCrud_ligne.getStep());
-            preparedStatement.setString(13, parametre_ecranCrud_ligne.getPlaceholder());
-            preparedStatement.setString(14, parametre_ecranCrud_ligne.getType_zone());
-            preparedStatement.setInt(15, parametre_ecranCrud_ligne.getLargeur_libelle());
-            preparedStatement.setString(16, "ParametreSys_entete");
-            preparedStatement.setString(17, dateTime);
-            preparedStatement.setString(18, System.getProperty("user.name"));
-            preparedStatement.setInt(19, parametre_ecranCrud_ligne.getId());
+            preparedStatement.setString(9, parametre_ecranCrud_ligne.getHidden());
+            preparedStatement.setInt(10, parametre_ecranCrud_ligne.getMinlength());
+            preparedStatement.setInt(11, parametre_ecranCrud_ligne.getMaxlength());
+            preparedStatement.setString(12, parametre_ecranCrud_ligne.getType());
+            preparedStatement.setString(13, parametre_ecranCrud_ligne.getStep());
+            preparedStatement.setString(14, parametre_ecranCrud_ligne.getPlaceholder());
+            preparedStatement.setString(15, parametre_ecranCrud_ligne.getType_zone());
+            preparedStatement.setInt(16, parametre_ecranCrud_ligne.getLargeur_libelle());
+            preparedStatement.setString(17, "ParametreSys_entete");
+            preparedStatement.setString(18, dateTime);
+            preparedStatement.setString(19, System.getProperty("user.name"));
+            preparedStatement.setInt(20, parametre_ecranCrud_ligne.getId());
             preparedStatement.executeUpdate();
             connexion.commit();
         } catch (SQLException e) {
@@ -131,7 +133,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
         try {
         	connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
-            String sql = "INSERT INTO parametre_ecranCrud_ligne(parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            String sql = "INSERT INTO parametre_ecranCrud_ligne(parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, hidden, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
             preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setInt(1, parametre_ecranCrud_ligne.getParametreSysteme());
             preparedStatement.setInt(2, parametre_ecranCrud_ligne.getNumero_ligne());
@@ -141,16 +143,17 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
             preparedStatement.setString(6, parametre_ecranCrud_ligne.getRequired());
             preparedStatement.setString(7, parametre_ecranCrud_ligne.getReadonly());
             preparedStatement.setString(8, parametre_ecranCrud_ligne.getDisabled());
-            preparedStatement.setInt(9, parametre_ecranCrud_ligne.getMinlength());
-            preparedStatement.setInt(10, parametre_ecranCrud_ligne.getMaxlength());
-            preparedStatement.setString(11, parametre_ecranCrud_ligne.getType());
-            preparedStatement.setString(12, parametre_ecranCrud_ligne.getStep());
-            preparedStatement.setString(13, parametre_ecranCrud_ligne.getPlaceholder());
-            preparedStatement.setString(14, parametre_ecranCrud_ligne.getType_zone());
-            preparedStatement.setInt(15, parametre_ecranCrud_ligne.getLargeur_libelle());
-            preparedStatement.setString(16, "ParametreSys_entete");
-            preparedStatement.setString(17, dateTime);
-            preparedStatement.setString(18, System.getProperty("user.name"));
+            preparedStatement.setString(9, parametre_ecranCrud_ligne.getHidden());
+            preparedStatement.setInt(10, parametre_ecranCrud_ligne.getMinlength());
+            preparedStatement.setInt(11, parametre_ecranCrud_ligne.getMaxlength());
+            preparedStatement.setString(12, parametre_ecranCrud_ligne.getType());
+            preparedStatement.setString(13, parametre_ecranCrud_ligne.getStep());
+            preparedStatement.setString(14, parametre_ecranCrud_ligne.getPlaceholder());
+            preparedStatement.setString(15, parametre_ecranCrud_ligne.getType_zone());
+            preparedStatement.setInt(16, parametre_ecranCrud_ligne.getLargeur_libelle());
+            preparedStatement.setString(17, "ParametreSys_entete");
+            preparedStatement.setString(18, dateTime);
+            preparedStatement.setString(19, System.getProperty("user.name"));
             preparedStatement.executeUpdate();
             connexion.commit();
         } catch (SQLException e) {
@@ -244,7 +247,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
         try {
         	connexion = daoFactory.getConnection();
             statement = connexion.createStatement();
-            String sql = "SELECT id, parametreSysteme, nom_programme, numero_ligne, numero_champ, nom_champ, required, readonly, disabled, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle FROM parametre_ecranCrud_ligne order bu numero_ligne, numero_champ;";
+            String sql = "SELECT id, parametreSysteme, nom_programme, numero_ligne, numero_champ, nom_champ, required, readonly, disabled, hidden, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle FROM parametre_ecranCrud_ligne order bu numero_ligne, numero_champ;";
             resultat = statement.executeQuery(sql);
             while (resultat.next()) {
                 Parametre_ecranCrud_ligne parametre_ecranCrud_ligne = new Parametre_ecranCrud_ligne();
@@ -257,6 +260,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
                 parametre_ecranCrud_ligne.setRequired(resultat.getString("required"));
                 parametre_ecranCrud_ligne.setReadonly(resultat.getString("readonly"));
                 parametre_ecranCrud_ligne.setDisabled(resultat.getString("disabled"));
+                parametre_ecranCrud_ligne.setHidden(resultat.getString("hidden"));
                 parametre_ecranCrud_ligne.setMinlength(resultat.getInt("minlength"));
                 parametre_ecranCrud_ligne.setMaxlength(resultat.getInt("maxlength"));
                 parametre_ecranCrud_ligne.setType(resultat.getString("type"));
@@ -286,7 +290,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
 
         try {
         	connexion = daoFactory.getConnection();
-            String sql = "SELECT parametre_ecranCrud_ligne.id, parametre_ecranCrud_ligne.parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, parametreSysteme.nom, parametre_ecranCrud_ligne.pgmcreation, parametre_ecranCrud_ligne.datecreation, parametre_ecranCrud_ligne.usercreation, parametre_ecranCrud_ligne.pgmmodification, parametre_ecranCrud_ligne.datemodification, parametre_ecranCrud_ligne.usermodification FROM parametre_ecranCrud_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranCrud_ligne.parametreSysteme WHERE parametre_ecranCrud_ligne.id=?;";
+            String sql = "SELECT parametre_ecranCrud_ligne.id, parametre_ecranCrud_ligne.parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, hidden, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, parametreSysteme.nom, parametre_ecranCrud_ligne.pgmcreation, parametre_ecranCrud_ligne.datecreation, parametre_ecranCrud_ligne.usercreation, parametre_ecranCrud_ligne.pgmmodification, parametre_ecranCrud_ligne.datemodification, parametre_ecranCrud_ligne.usermodification FROM parametre_ecranCrud_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranCrud_ligne.parametreSysteme WHERE parametre_ecranCrud_ligne.id=?;";
             preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setInt(1, id);
             resultat = preparedStatement.executeQuery();
@@ -301,6 +305,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
                 parametre_ecranCrud_ligne.setRequired(resultat.getString("required"));
                 parametre_ecranCrud_ligne.setReadonly(resultat.getString("readonly"));
                 parametre_ecranCrud_ligne.setDisabled(resultat.getString("disabled"));
+                parametre_ecranCrud_ligne.setHidden(resultat.getString("hidden"));
                 parametre_ecranCrud_ligne.setMinlength(resultat.getInt("minlength"));
                 parametre_ecranCrud_ligne.setMaxlength(resultat.getInt("maxlength"));
                 parametre_ecranCrud_ligne.setType(resultat.getString("type"));
@@ -364,7 +369,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
 
         try {
         	connexion = daoFactory.getConnection();
-            String query = "SELECT SQL_CALC_FOUND_ROWS parametre_ecranCrud_ligne.id, parametre_ecranCrud_ligne.parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, parametreSysteme.nom FROM parametre_ecranCrud_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranCrud_ligne.parametreSysteme ORDER BY " + select_tri + " LIMIT ?, ?";
+            String query = "SELECT SQL_CALC_FOUND_ROWS parametre_ecranCrud_ligne.id, parametre_ecranCrud_ligne.parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, hidden, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, parametreSysteme.nom FROM parametre_ecranCrud_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranCrud_ligne.parametreSysteme ORDER BY " + select_tri + " LIMIT ?, ?";
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);
@@ -400,6 +405,9 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
                 if (dictionnaire_nom_colonne.containsKey("disabled")) {
                 entiteFields.put("disabled", rs.getString("disabled"));
                 }
+                if (dictionnaire_nom_colonne.containsKey("hidden")) {
+                    entiteFields.put("hidden", rs.getString("hidden"));
+                    }
                 if (dictionnaire_nom_colonne.containsKey("minlength")) {
                 entiteFields.put("minlength", rs.getInt("minlength"));
                 }
@@ -451,7 +459,7 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
 
         try {
             connexion = daoFactory.getConnection();
-            String query = "SELECT SQL_CALC_FOUND_ROWS parametre_ecranCrud_ligne.id, parametre_ecranCrud_ligne.parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, parametreSysteme.nom  FROM parametre_ecranCrud_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranCrud_ligne.parametreSysteme WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
+            String query = "SELECT SQL_CALC_FOUND_ROWS parametre_ecranCrud_ligne.id, parametre_ecranCrud_ligne.parametreSysteme, numero_ligne, numero_champ, nom_programme, nom_champ, required, readonly, disabled, hidden, minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, parametreSysteme.nom  FROM parametre_ecranCrud_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranCrud_ligne.parametreSysteme WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);
@@ -487,6 +495,9 @@ public class Parametre_ecranCrud_ligneDaoImpl implements Parametre_ecranCrud_lig
                      if (dictionnaire_nom_colonne.containsKey("disabled")) {
                      entiteFields.put("disabled", rs.getString("disabled"));
                      }
+                     if (dictionnaire_nom_colonne.containsKey("hidden")) {
+                         entiteFields.put("hidden", rs.getString("hidden"));
+                         }
                      if (dictionnaire_nom_colonne.containsKey("minlength")) {
                      entiteFields.put("minlength", rs.getInt("minlength"));
                      }

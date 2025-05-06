@@ -225,21 +225,39 @@ public class DaoFactory {
 	    }
 
 	 // Récupération du Dao
-	    public AccordOrganisationDao getAccordOrganisationDao() {
-	        return new AccordOrganisationDaoImpl(this);
-	    }
-
-	 // Récupération du Dao
-	    public ClientDao getClientDao() {
-	        return new ClientDaoImpl(this);
-	    }
-
-	 // Récupération du Dao
 	    public ActionDao getActionDao() {
 	        return new ActionDaoImpl(this);
 	    }
 	    // Récupération du Dao
 	    public TypeUtilisateurDao getTypeUtilisateurDao() {
 	        return new TypeUtilisateurDaoImpl(this);
+	    }
+	 // Récupération du Dao
+	    public CraDao getCraDao() {
+	        return new CraDaoImpl(this);
+	    }
+	    // Récupération du Dao
+	    public Cra_detailDao getCra_detailDao() {
+	        return new Cra_detailDaoImpl(this);
+	    }
+	 // Récupération du Dao
+	    public TypeFactureAchatDao getTypeFactureAchatDao() {
+	        return new TypeFactureAchatDaoImpl(this);
+	    }
+	 // Récupération du Dao
+	    public TypeFactureVenteDao getTypeFactureVenteDao() {
+	        return new TypeFactureVenteDaoImpl(this);
+	    }
+	 // Récupération du Dao
+	    public FactureVenteDao getFactureVenteDao() {
+	        return new FactureVenteDaoImpl(this);
+	    }
+	    // Récupération du Dao
+	    public ClientDao getClientDao() {
+	        return new ClientDaoImpl(this);
+	    }
+	 // Récupération du Dao
+	    public MaSocieteDao getMaSocieteDao() {
+	        return new MaSocieteDaoImpl(this);
 	    }
 }

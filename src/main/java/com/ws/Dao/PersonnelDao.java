@@ -30,4 +30,8 @@ public interface PersonnelDao {
 		String getStringRecords();
 		Integer getIntegerRecords();
 		void renommerPersonnel(Personnel personnel) throws DaoException;
+		List<Personnel> listerPersonnelClient() throws DaoException;
+		List<Personnel> listerPersonnelFournisseur() throws DaoException;
+		List<Personnel> listerPersonnelSalarie() throws DaoException;
+		List<Personnel> listerPersonnelInterne() throws DaoException;
 }

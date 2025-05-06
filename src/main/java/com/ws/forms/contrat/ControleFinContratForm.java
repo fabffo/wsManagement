@@ -18,14 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ws.Dao.DaoFactory;
-import com.ws.Dao.ContratDao;
-import com.ws.beans.Contrat;
+import com.ws.Dao.ContratDaoAncien;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Tva;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 public final class ControleFinContratForm {
-	private ContratDao collaborateurDao;
+	private ContratDaoAncien collaborateurDao;
 	private static final String CHAMP_STATUT = "statut";
 	private static final String CHAMP_DOCUMENT = "document";
 	private static final String CHAMP_NOM_CONTRAT = "nom_contrat";
@@ -64,7 +64,7 @@ public final class ControleFinContratForm {
 		return resultat;
 	}
 
-	public Contrat TerminerContrat(HttpServletRequest request, Contrat contrat) {
+	public ContratAncien TerminerContrat(HttpServletRequest request, ContratAncien contrat) {
 
 		DaoFactory daoFactory = DaoFactory.getInstance();
 		this.collaborateurDao = daoFactory.getContratDao();

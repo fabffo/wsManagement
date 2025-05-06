@@ -42,4 +42,12 @@ public interface TypeIntervenantDao {
 	List<Map<String, Object>> rechercheTypeIntervenants(Integer offset, Integer noOfRecords, String select_tri,
 			LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite);
 
+	List<TypeIntervenant> listerTypeIntervenantSalarie() throws DaoException;
+
+	List<TypeIntervenant> listerTypeIntervenantFournisseur() throws DaoException;
+
+	List<TypeIntervenant> listerTypeIntervenantClient() throws DaoException;
+
+	List<TypeIntervenant> listerTypeIntervenantInterne() throws DaoException;
+
 }

@@ -415,6 +415,9 @@ public class ParametreDaoImpl implements ParametreDao {
             genererParametre_ecranCrud_entete(connection, entiteName, id_systeme, fieldsInfo);
             genererParametre_ecranCrud_ligne(connection, entiteName, id_systeme, fieldsInfo);
 
+            // **NOUVELLE ÉTAPE** : Insérer les actions dans la table `action`
+            insererActions(connection, entiteName);
+
             // Étape 6 : Si tout s'est bien passé, valider la transaction
             connection.commit();
         } catch (Exception e) {
@@ -582,7 +585,7 @@ public class ParametreDaoImpl implements ParametreDao {
 		String fieldType;
         String fieldName;
 		String sql = "INSERT INTO parametre_ecrancrud_ligne (parametreSysteme, nom_programme, numero_ligne, numero_champ, nom_champ, required, readonly, disabled,  minlength, maxlength, type, step, placeholder, type_zone, largeur_libelle, pgmcreation, datecreation, usercreation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-		String[] programmes = { "ajout", "maj", "copie", "visualisation", "renommage", "suppression" };
+		String[] programmes = { "ajout", "maj", "copie", "visualisation", "renommage", "suppression", "annulation", "fin" };
 
 		try {
 			//connexion = daoFactory.getConnection();
@@ -633,6 +636,28 @@ public class ParametreDaoImpl implements ParametreDao {
 			e.printStackTrace();
 		}
 	}
+
+	private void insererActions(Connection connexion, String entiteName) throws SQLException {
+	    String sql = "INSERT INTO action (nom_programme, action, disponible, pgmcreation, datecreation, usercreation) VALUES (?, ?, ?, ?, ?, ?);";
+	    String[] programmes = { "ajouter", "modifier", "copier", "visualiser", "renommer", "supprimer", "faire_avenant", "terminer", "annuler" };
+
+	    try (PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
+	        for (String programme : programmes) {
+	            preparedStatement.setString(1, entiteName);
+	            preparedStatement.setString(2, programme);
+	            preparedStatement.setString(3, "True");
+	            preparedStatement.setString(4, "GénérerParametre");
+	            preparedStatement.setString(5, dateTime);
+	            preparedStatement.setString(6, System.getProperty("user.name"));
+	            preparedStatement.addBatch();
+	        }
+	        preparedStatement.executeBatch();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        throw new SQLException("Erreur lors de l'insertion des actions : " + e.getMessage());
+	    }
+	}
+
 
 	private boolean shouldSkip(String value) {
 	    List<String> exclusions = Arrays.asList("usercreation", "datecreation","pgmcreation","usermodification","datemodification", "pgmmodification" );

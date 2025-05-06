@@ -19,6 +19,7 @@ public class Parametre_ecranCrud_ligne {
 	private String required;
 	private String readonly;
 	private String disabled;
+	private String hidden;
 	public int minlength;
 	public int maxlength;
 	private String type;
@@ -85,6 +86,12 @@ public class Parametre_ecranCrud_ligne {
 	}
 	public void setDisabled(String disabled) {
 		this.disabled = disabled;
+	}
+	public String getHidden() {
+		return hidden;
+	}
+	public void setHidden(String hidden) {
+		this.hidden = hidden;
 	}
 	public int getMinlength() {
 		return minlength;
@@ -170,12 +177,11 @@ public class Parametre_ecranCrud_ligne {
 		return "Parametre_ecranCrud_ligne [id=" + id + ", parametreSysteme=" + parametreSysteme + ", nom_programme="
 				+ nom_programme + ", numero_ligne=" + numero_ligne + ", numero_champ=" + numero_champ + ", nom_champ="
 				+ nom_champ + ", required=" + required + ", readonly=" + readonly + ", disabled=" + disabled
-				+ ", minlength=" + minlength + ", maxlength=" + maxlength + ", type=" + type + ", step=" + step
-				+ ", placeholder=" + placeholder + ", type_zone=" + type_zone + ", largeur_libelle=" + largeur_libelle
-				+ ", usermodification=" + usermodification + ", datemodification=" + datemodification
+				+ ", hidden=" + hidden + ", minlength=" + minlength + ", maxlength=" + maxlength + ", type=" + type
+				+ ", step=" + step + ", placeholder=" + placeholder + ", type_zone=" + type_zone + ", largeur_libelle="
+				+ largeur_libelle + ", usermodification=" + usermodification + ", datemodification=" + datemodification
 				+ ", pgmmodification=" + pgmmodification + ", usercreation=" + usercreation + ", datecreation="
-				+ datecreation + ", pgmcreation=" + pgmcreation + ", libelle_parametreSysteme="
-				 + "]";
+				+ datecreation + ", pgmcreation=" + pgmcreation + "]";
 	}
 
 	}

@@ -35,12 +35,12 @@ import org.apache.catalina.tribes.ChannelSender;
 
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
-import com.ws.Dao.ContratDao;
+import com.ws.Dao.ContratDaoAncien;
 import com.ws.beans.Societe;
 import com.ws.beans.Tva;
 import com.ws.beans.TypeContratSociete;
 import com.ws.beans.Collaborateur;
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Utilisateur;
 import com.ws.configuration.Configuration;
 import com.ws.configuration.DatasourceH;
@@ -61,7 +61,7 @@ public class AjoutContrat extends HttpServlet {
 	public static final String ATT_FORM = "form";
 	public static final String VUE_SUCCES = "gestionContrat";
 	public static final String VUE_FORM = "/WEB-INF/JSP_contrat/ajoutContrat.jsp";
-	private ContratDao contratDao;
+	private ContratDaoAncien contratDao;
 	DaoFactory daoFactory;
 	private int currentPage;
 	private String fichierSortie;
@@ -87,7 +87,7 @@ public class AjoutContrat extends HttpServlet {
 	String cheminFichier;
 	int tampon_fichier;
 	String action;
-	Contrat contrat;
+	ContratAncien contrat;
 	String statut;
 	String description;
 	String nomFichier;
@@ -104,7 +104,7 @@ public class AjoutContrat extends HttpServlet {
 	// ===========================================================================
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+System.out.println("getaj");
 		// -----------Récupération des paramètres -----------
 		try {
 			RecupParam(request);
@@ -130,6 +130,7 @@ public class AjoutContrat extends HttpServlet {
 	// ===========================================================================
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("posaj");
 		// -----------Récupération des paramètres -----------
 		try {
 			RecupParam(request);
@@ -148,6 +149,7 @@ public class AjoutContrat extends HttpServlet {
 
 		// -----------Récupération du fichier -----------
 		if ("uploadFile".equals(action)) {
+			System.out.println("on intègre le fichier");
 			try {
 				traiterUpload(request);
 			} catch (Exception e) {
@@ -167,7 +169,7 @@ public class AjoutContrat extends HttpServlet {
 
 			/* Traitement de la requête et récupération du bean en résultant */
 			// ---------------------------------------------------------------------
-			Contrat contrat = formX.ControlerExistenceContrat(request);
+			ContratAncien contrat = formX.ControlerExistenceContrat(request);
 
 			// si pas d'erreur existence on controle les données
 			// si erreur de données on remplace le formulaire
@@ -311,7 +313,7 @@ public class AjoutContrat extends HttpServlet {
 	private void RecupParam(HttpServletRequest request) throws Exception {
 
 		// --------- fichier
-		fichierSortie = "contrat.pdf";
+		fichierSortie = "contrat1.pdf";
 
 		// --------- action
 		action = request.getParameter("action");
@@ -347,7 +349,7 @@ public class AjoutContrat extends HttpServlet {
 
 		// ---------Statut par défaut en cours -----------------------------
 		statut = "En-cours";
-		contrat = new Contrat();
+		contrat = new ContratAncien();
 		contrat.setStatut(statut);
 
 		List<String> listStatut = new ArrayList<String>();

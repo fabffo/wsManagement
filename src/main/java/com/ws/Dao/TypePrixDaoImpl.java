@@ -1,10 +1,3 @@
-////////////////////////////////////////////////////////////////////////////
-////    PROJET LOGICIEL FACTURATION COMPTABILITE                        ///
-////    PROGRAMME DAO IMPLEMENTATION UTILISATEUR                        ///
-////    Créé par Fabrice FOUGERY le 29/04/2024                          ///
-////    Modifié par ....... .... le ../../....                          ///
-////////////////////////////////////////////////////////////////////////////
-
 package com.ws.Dao;
 
 import java.sql.Connection;
@@ -15,126 +8,70 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.ws.beans.ContratAncien;
 import com.ws.beans.TypePrix;
+import com.ws.configuration.DatasourceH;
 
 public class TypePrixDaoImpl implements TypePrixDao {
     private DaoFactory daoFactory;
-    // date du jour
     private String dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDateTime.now());
     private int noOfRecords;
 
-    TypePrixDaoImpl(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
 
-    // Méthode utilitaire pour la gestion des transactions et la fermeture des connexions
-    private void close(Connection connection) throws DaoException {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                throw new DaoException("Impossible de fermer la connexion"+ e);
-            }
-        }
-    }
+	  TypePrixDaoImpl(DaoFactory daoFactory) { this.daoFactory = daoFactory; }
 
-    // CRUD CREER
+	  	// =================================================================================
+		// AJOUTER TYPEPRIX
+		// =================================================================================
     @Override
     public void ajouterTypePrix(TypePrix typePrix) throws DaoException {
-        String sql = "INSERT INTO typePrix(Nom, libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?);";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            connection.setAutoCommit(false);
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connexion  = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
+            String sql = "INSERT INTO typePrix(nom, libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?);";
+            preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setString(1, typePrix.getNom());
             preparedStatement.setString(2, typePrix.getLibelle());
             preparedStatement.setString(3, "TypePrixDao");
             preparedStatement.setString(4, dateTime);
             preparedStatement.setString(5, System.getProperty("user.name"));
             preparedStatement.executeUpdate();
-            connection.commit();
+            connexion.commit();
         } catch (SQLException e) {
-            throw new DaoException("Impossible d'ajouter un enregistrement dans la table typePrix"+ e);
-        }
-    }
-
-    // LISTER LES ENREGISTREMENTS
-    @Override
-    public List<TypePrix> listerTypePrix() throws DaoException {
-        List<TypePrix> typePrixs = new ArrayList<>();
-        String sql = "SELECT id, Nom, libelle FROM typePrix;";
-        try (Connection connection = daoFactory.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-            while (resultSet.next()) {
-                TypePrix typePrix = new TypePrix();
-                typePrix.setId(resultSet.getInt("id"));
-                typePrix.setNom(resultSet.getString("Nom"));
-                typePrix.setLibelle(resultSet.getString("libelle"));
-                typePrixs.add(typePrix);
-            }
-        } catch (SQLException e) {
-            throw new DaoException("Impossible de lister les enregistrements dans la table typePrix"+ e);
-        }
-        return typePrixs;
-    }
-
-    // CRUD LIRE UN ENREGISTREMENT SPECIFIQUE VIA SON ID
-    @Override
-    public TypePrix trouverTypePrix(Integer id) throws DaoException {
-        TypePrix typePrix = null;
-        String sql = "SELECT * FROM typePrix WHERE ID=?;";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    typePrix = new TypePrix();
-                    typePrix.setId(id);
-                    typePrix.setNom(resultSet.getString("Nom"));
-                    typePrix.setLibelle(resultSet.getString("libelle"));
-                    typePrix.setPgmmodification(resultSet.getString("pgmmodification"));
-                    typePrix.setUsermodification(resultSet.getString("usermodification"));
-                    typePrix.setDatemodification(resultSet.getDate("datemodification"));
-                    typePrix.setPgmcreation(resultSet.getString("pgmcreation"));
-                    typePrix.setUsercreation(resultSet.getString("usercreation"));
-                    typePrix.setDatecreation(resultSet.getDate("datecreation"));
+            if (connexion != null) {
+                try {
+                    connexion.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Rollback failed: " + ex.getMessage());
                 }
             }
-        } catch (SQLException e) {
-            throw new DaoException("Impossible de trouver l'enregistrement avec l'ID " + id + " dans la table typePrix"+ e);
+            throw new DaoException("Impossible d'ajouter l'enregistrement avec la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
         }
-        return typePrix;
     }
 
-    // EXISTENCE D'UN ENREGISTREMENT SPECIFIQUE VIA SON Nom
-    @Override
-    public boolean trouverNomTypePrix(String nom) throws DaoException {
-        boolean existe = false;
-        String sql = "SELECT * FROM typePrix WHERE Nom=?;";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, nom);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    existe = true;
-                }
-            }
-        } catch (SQLException e) {
-            throw new DaoException("Impossible de vérifier l'existence du nom dans la table typePrix"+ e);
-        }
-        return existe;
-    }
-
-    // CRUD MODIFIER ENREGISTREMENT
+    	// =================================================================================
+		// MODIFIER TYPEPRIX
+		// =================================================================================
     @Override
     public void modifierTypePrix(TypePrix typePrix) throws DaoException {
-        String sql = "UPDATE typePrix SET Nom=?, libelle=?, pgmmodification=?, datemodification=?, usermodification=? WHERE id=?;";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            connection.setAutoCommit(false);
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
+            String sql = "UPDATE typePrix SET nom=?, libelle=?, pgmmodification=?, datemodification=?, usermodification=? WHERE id=?;";
+            preparedStatement = connexion.prepareStatement(sql);
             preparedStatement.setString(1, typePrix.getNom());
             preparedStatement.setString(2, typePrix.getLibelle());
             preparedStatement.setString(3, "TypePrixDao");
@@ -142,93 +79,350 @@ public class TypePrixDaoImpl implements TypePrixDao {
             preparedStatement.setString(5, System.getProperty("user.name"));
             preparedStatement.setInt(6, typePrix.getId());
             preparedStatement.executeUpdate();
-            connection.commit();
+            connexion.commit();
         } catch (SQLException e) {
-            throw new DaoException("Impossible de mettre à jour l'enregistrement dans la table typePrix"+ e);
-        }
-    }
-
-    // CRUD COPIER ENREGISTREMENT
-    @Override
-    public void copierTypePrix(TypePrix typePrix) throws DaoException {
-        ajouterTypePrix(typePrix);
-    }
-
-    // CRUD SUPPRIMER UN ENREGISTREMENT
-    @Override
-    public void supprimerTypePrix(Integer id) throws DaoException {
-        String sql = "DELETE FROM typePrix WHERE ID=?;";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
-            connection.commit();
-        } catch (SQLException e) {
-            throw new DaoException("Impossible de supprimer l'enregistrement avec l'ID " + id + " dans la table typePrix"+ e);
-        }
-    }
-
-    // Rechercher et lister les enregistrements
-    @Override
-    public List<TypePrix> rechercheTypePrixs(int offset, int noOfRecords, String select_tri) throws DaoException {
-        List<TypePrix> list = new ArrayList<>();
-        String query = "SELECT SQL_CALC_FOUND_ROWS * FROM typePrix ORDER BY " + select_tri + " LIMIT ?, ?;";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, offset);
-            preparedStatement.setInt(2, noOfRecords);
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    TypePrix typePrix = new TypePrix();
-                    typePrix.setId(rs.getInt("id"));
-                    typePrix.setNom(rs.getString("Nom"));
-                    typePrix.setLibelle(rs.getString("libelle"));
-                    list.add(typePrix);
-                }
-                try (ResultSet rsCount = preparedStatement.executeQuery("SELECT FOUND_ROWS()")) {
-                    if (rsCount.next()) {
-                        this.noOfRecords = rsCount.getInt(1);
-                    }
+            if (connexion != null) {
+                try {
+                    connexion.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Rollback failed: " + ex.getMessage());
                 }
             }
+            throw new DaoException("Impossible de mettre à jour l'enregistrement avec la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
+
+    	// =================================================================================
+  		// COPIER TYPEPRIX
+  		// =================================================================================
+    @Override
+    public void copierTypePrix(TypePrix typePrix) throws DaoException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
+            String sql = "INSERT INTO typePrix(nom, libelle, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?);";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setString(1, typePrix.getNom());
+            preparedStatement.setString(2, typePrix.getLibelle());
+            preparedStatement.setString(3, "TypePrixDao");
+            preparedStatement.setString(4, dateTime);
+            preparedStatement.setString(5, System.getProperty("user.name"));
+            preparedStatement.executeUpdate();
+            connexion.commit();
         } catch (SQLException e) {
-            throw new DaoException("Impossible de rechercher les enregistrements dans la table typePrix"+ e);
+            if (connexion != null) {
+                try {
+                    connexion.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Rollback failed: " + ex.getMessage());
+                }
+            }
+            throw new DaoException("Impossible de copier l'enregistrement avec la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
+
+    	// =================================================================================
+  		// SUPPRIMER TYPEPRIX
+  		// =================================================================================
+
+    @Override
+    public void supprimerTypePrix(Integer id) throws DaoException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            String sql = "DELETE FROM typePrix WHERE ID=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+            connexion.commit();
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de supprimer l'enregistrement avec la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
+
+
+    	// =================================================================================
+ 		// RENOMMER TYPEPRIX
+ 		// =================================================================================
+ 		@Override
+ 		public void renommerTypePrix(TypePrix typePrix) throws DaoException {
+ 			Connection connexion = null;
+ 			PreparedStatement preparedStatement = null;
+
+ 			try {
+ 				connexion = daoFactory.getConnection();
+
+ 				preparedStatement = connexion.prepareStatement(
+ 						"UPDATE typePrix SET typePrix.nom=?, typePrix.pgmmodification=?, typePrix.datemodification=?,"
+ 								+ " typePrix.usermodification=? where typePrix.id=?;");
+ 				preparedStatement.setString(1, typePrix.getNom());
+ 				preparedStatement.setString(2, "RENOMMER TYPEPRIX");
+ 				preparedStatement.setString(3, dateTime);
+ 				preparedStatement.setString(4, System.getProperty("user.name"));
+ 				preparedStatement.setInt(5, typePrix.getId());
+ 				preparedStatement.executeUpdate();
+ 				connexion.commit();
+ 			} catch (SQLException e) {
+ 				try {
+ 					if (connexion != null) {
+ 						connexion.rollback();
+ 					}
+ 				} catch (SQLException e2) {
+ 				}
+ 				throw new DaoException("Impossible de renommer enregistrement avec la table contratt" + e);
+ 			} finally {
+ 				try {
+ 					if (connexion != null) {
+ 						connexion.close();
+ 					}
+ 				} catch (SQLException e) {
+ 					throw new DaoException("Impossible de renommer enregistrement avec la table contratt" + e);
+ 				}
+ 			}
+ 		}
+
+ 	// =================================================================================
+  	// LISTER DES TYPEPRIXS
+  	// =================================================================================
+    @Override
+    public List<TypePrix> listerTypePrix() throws DaoException {
+        List<TypePrix> typePrixs = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT id, nom, libelle FROM typePrix;";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypePrix typePrix = new TypePrix();
+                typePrix.setId(resultat.getInt("id"));
+                typePrix.setNom(resultat.getString("nom"));
+                typePrix.setLibelle(resultat.getString("libelle"));
+                typePrixs.add(typePrix);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typePrixs;
+    }
+    @Override
+    public List<TypePrix> listerTypePrixClient() throws DaoException {
+        return listerTypePrix();
+    }
+    @Override
+    public List<TypePrix> listerTypePrixFournisseur() throws DaoException {
+        return listerTypePrix();
+    }
+
+    @Override
+    public List<TypePrix> listerTypePrixSalarie() throws DaoException {
+    	return listerTypePrix();
+    }
+
+    	// =================================================================================
+		// TROUVER TYPEPRIX PAR ID
+		// =================================================================================
+    @Override
+    public TypePrix trouverTypePrix(Integer id) throws DaoException {
+        TypePrix typePrix = null;
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            String sql = "SELECT * FROM typePrix WHERE ID=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            resultat = preparedStatement.executeQuery();
+            if (resultat.next()) {
+                typePrix = new TypePrix();
+                typePrix.setId(id);
+                typePrix.setNom(resultat.getString("nom"));
+                typePrix.setLibelle(resultat.getString("libelle"));
+                typePrix.setUsermodification(resultat.getString("usermodification"));
+                typePrix.setDatemodification(resultat.getDate("datemodification"));
+                typePrix.setPgmmodification(resultat.getString("pgmmodification"));
+                typePrix.setUsercreation(resultat.getString("usercreation"));
+                typePrix.setDatecreation(resultat.getDate("datecreation"));
+                typePrix.setPgmcreation(resultat.getString("pgmcreation"));
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de trouver l'enregistrement avec la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, resultat);
+        }
+        return typePrix;
+    }
+
+    	// =================================================================================
+		// TROUVER TYPEPRIX PAR NOM
+		// =================================================================================
+    @Override
+    public boolean trouverNomTypePrix(String nom) throws DaoException {
+        boolean existe = false;
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            String sql = "SELECT * FROM typePrix WHERE nom=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setString(1, nom);
+            resultat = preparedStatement.executeQuery();
+            if (resultat.next()) {
+                existe = true;
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de vérifier l'existence du nom dans la table TypePrix"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, resultat);
+        }
+        return existe;
+    }
+
+
+
+    	// =================================================================================
+		// RECHERCHE TYPEPRIX
+		// =================================================================================
+    @Override
+    public List<Map<String, Object>> rechercheTypePrixs(Integer offset, Integer noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_typePrix, String type_entite) {
+    	List<Map<String, Object>> list = new ArrayList<>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            String query = "SELECT SQL_CALC_FOUND_ROWS * FROM typePrix ORDER BY " + select_tri + " LIMIT ?, ?";
+            preparedStatement = connexion.prepareStatement(query);
+            preparedStatement.setInt(1, offset);
+            preparedStatement.setInt(2, noOfRecords);
+            rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                Map<String, Object> typePrixFields = new LinkedHashMap<>();
+                typePrixFields.put("id", rs.getInt("id"));
+                typePrixFields.put("nom", rs.getString("nom"));
+                typePrixFields.put("libelle", rs.getString("libelle"));
+                list.add(typePrixFields);
+            }
+
+            rs.close();
+
+            preparedStatement = connexion.prepareStatement("SELECT FOUND_ROWS()");
+            rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                this.noOfRecords = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connexion, preparedStatement, rs);
         }
         return list;
     }
 
-    // Avoir le N° enregistrement en cours
+    	// =================================================================================
+		// RECHERCHE TYPEPRIXS SUIVANT LIKE
+		// =================================================================================
+    @Override
+    public List<Map<String, Object>>  rechercheLikeTypePrixs(Integer offset, Integer noOfRecords, String select_tri, String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_typePrix, String type_entite) {
+    	List<Map<String, Object>> list = new ArrayList<>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+
+        try {
+            connexion = daoFactory.getConnection();
+            String query = "SELECT SQL_CALC_FOUND_ROWS * FROM typePrix WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
+            preparedStatement = connexion.prepareStatement(query);
+            preparedStatement.setInt(1, offset);
+            preparedStatement.setInt(2, noOfRecords);
+            rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+            	Map<String, Object> typePrixFields = new LinkedHashMap<>();
+                typePrixFields.put("id", rs.getInt("id"));
+                typePrixFields.put("nom", rs.getString("nom"));
+                typePrixFields.put("libelle", rs.getString("libelle"));
+                list.add(typePrixFields);
+            }
+
+            rs.close();
+
+            preparedStatement = connexion.prepareStatement("SELECT FOUND_ROWS()");
+            rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                this.noOfRecords = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connexion, preparedStatement, rs);
+        }
+        return list;
+    }
+
+
+    // =================================================================================
+	// RECUPERATION N° ENREGISTREMENT ENCOURS TYPEPRIX
+	// =================================================================================
     @Override
     public int getNoOfRecords() {
         return noOfRecords;
     }
 
-    // Rechercher et lister les enregistrements suivant like
     @Override
-    public List<TypePrix> rechercheLikeTypePrixs(int offset, int noOfRecords, String select_tri, String select_like) throws DaoException {
-        List<TypePrix> list = new ArrayList<>();
-        String query = "SELECT SQL_CALC_FOUND_ROWS * FROM typePrix WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?;";
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, offset);
-            preparedStatement.setInt(2, noOfRecords);
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    TypePrix typePrix = new TypePrix();
-                    typePrix.setId(rs.getInt("id"));
-                    typePrix.setNom(rs.getString("Nom"));
-                    typePrix.setLibelle(rs.getString("libelle"));
-                    list.add(typePrix);
-                }
-                try (ResultSet rsCount = preparedStatement.executeQuery("SELECT FOUND_ROWS()")) {
-                    if (rsCount.next()) {
-                        this.noOfRecords = rsCount.getInt(1);
-                    }
-                }
+    public Integer getIntegerRecords() {
+    	Integer integerRecords = noOfRecords;
+        return integerRecords;
+    }
+
+
+    // =================================================================================
+	// FERMETURE DES RESSOURCES TYPEPRIX
+	// =================================================================================
+    private void closeResources(Connection connexion, Statement statement, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing result set: " + e.getMessage());
             }
-        } catch (SQLException e) {
-            throw new DaoException("Impossible de rechercher les enregistrements dans la table typePrix"+ e);
         }
-        return list;
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing statement: " + e.getMessage());
+            }
+        }
+        if (connexion != null) {
+            try {
+                connexion.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing connection: " + e.getMessage());
+            }
+        }
     }
 }

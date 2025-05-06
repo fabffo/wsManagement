@@ -48,4 +48,6 @@ public interface ActiviteDao {
 
 	List<Activite> listerActiviteSalarie() throws DaoException;
 
+	List<Activite> listerActiviteInterne() throws DaoException;
+
 }

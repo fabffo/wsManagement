@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Parametre_ecranGestion_ligne;
 import com.ws.configuration.DatasourceH;
 
@@ -387,7 +387,7 @@ public class Parametre_ecranGestion_ligneDaoImpl implements Parametre_ecranGesti
 
         try {
             connexion = daoFactory.getConnection();
-            String query = "SELECT SQL_CALC_FOUND_ROWS * FROM parametre_ecranGestion_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranGestion_ligne.parametreSysteme WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
+            String query = "SELECT SQL_CALC_FOUND_ROWS parametre_ecranGestion_ligne.id, parametre_ecranGestion_ligne.parametreSysteme, numero_ligne, numero_champ, nom_zone, largeur_colonne, type_colonne, zone_recherche, parametreSysteme.nom  FROM parametre_ecranGestion_ligne inner join parametreSysteme on parametreSysteme.id=parametre_ecranGestion_ligne.parametreSysteme WHERE " + select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
             preparedStatement = connexion.prepareStatement(query);
             preparedStatement.setInt(1, offset);
             preparedStatement.setInt(2, noOfRecords);

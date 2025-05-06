@@ -31,6 +31,7 @@ public final class ControleDonneesParametreMultiligne {
 	private String comWsBeansEntite;
 	private String trouverNomEntite;
 	private String type_entite;
+	private String document="";
 	private ParametreDao parametreDao; // DAO pour les paramètres
 	private ParametreEcranDao parametreEcranDao; // DAO pour les paramètres
 	ParametreSysteme parametreSysteme;
@@ -69,6 +70,7 @@ public final class ControleDonneesParametreMultiligne {
 						}
 					}
 
+					//type document
 					if (request.getParameter("type_entite") != null) {
 						request.getSession().setAttribute("type_entite", request.getParameter("type_entite"));
 					} else {
@@ -78,6 +80,14 @@ public final class ControleDonneesParametreMultiligne {
 						}
 					}
 					type_entite = (String) request.getSession().getAttribute("type_entite");
+
+					//document
+						if (request.getSession().getAttribute("document") != null) {
+							document = (String) request.getSession().getAttribute("document");
+							System.out.println("OKKKSESSION"+document);
+						}
+
+
 
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			daoFactory = DaoFactory.getInstance();
@@ -107,7 +117,6 @@ public final class ControleDonneesParametreMultiligne {
 
 		// Récupération classe_id
 		classe_id = Integer.parseInt(request.getParameter("classe_id"));
-		System.out.println("id classe"+classe_id);
 
 		// Préparer la Map des propriétés pour initialiser un objet Tva
 		entiteProperties.put("id", (int) classe_id);
@@ -129,10 +138,8 @@ public final class ControleDonneesParametreMultiligne {
 
             // Mettre à jour chaque champ avec la valeur provenant de la requête
             for (Map.Entry<String, Map<String, Object>> entry : validations.entrySet()) {
-            	System.out.println("je passe dans controle");
                 String nomChamp = entry.getKey();
                 String valeurChamp = request.getParameter(nomChamp);
-                System.out.println("je passe dans controle"+nomChamp+valeurChamp);
                 if ("nom".equals(nomChamp))
                 	CleNom = valeurChamp;// pour tester l'existence du nom
                 Map<String, Object> champConfig = entry.getValue();
@@ -140,25 +147,43 @@ public final class ControleDonneesParametreMultiligne {
                 // Vérifier si le champ est de type number et contient un step, puis parser en Double
                 if ("number".equals(champConfig.get("type")) && champConfig.get("step") != null) {
                     try {
-                    	  entiteProperties.put(nomChamp, valeurChamp != null ? Double.parseDouble(valeurChamp) : null);// renseigner l'entite classe
-                    	champConfig.put("valeur", valeurChamp != null ? Double.parseDouble(valeurChamp) : null);
+                        if (valeurChamp != null) {
+                            valeurChamp = valeurChamp.replace(',', '.').trim();
+                            if (valeurChamp.isEmpty()) valeurChamp = null;
+                        }
+                        System.out.println("Param reçu : '" + valeurChamp + "'");
+                        Double valeurNum = valeurChamp != null ? Double.parseDouble(valeurChamp) : null;
+
+                        entiteProperties.put(nomChamp, valeurNum);
+                        champConfig.put("valeur", valeurNum);
+
                     } catch (NumberFormatException e) {
-                    	  entiteProperties.put(nomChamp, null);// renseigner l'entite classe
-                    	champConfig.put("valeur", null);
+                        entiteProperties.put(nomChamp, null);
+                        champConfig.put("valeur", null);
                     }
                 } else {
-                	  entiteProperties.put(nomChamp, (request.getParameter(nomChamp)));// renseigner l'entite classe
-                    champConfig.put("valeur", valeurChamp); // Mettre à jour la valeur pour les autres types
+                    entiteProperties.put(nomChamp, request.getParameter(nomChamp));
+                    champConfig.put("valeur", valeurChamp);
                 }
+
 
                 //ajout des contrôles
              // Vérification si le champ est requis
         		if ((boolean) champConfig.get("required") && (valeurChamp == null || valeurChamp.trim().isEmpty())) {
+        			System.out.println("champ "+nomChamp);
+        			if (nomChamp.equals("document")) {
+        				System.out.println("le doc" +document);
+        				if ( (document == null || document.trim().isEmpty())) {
+        					erreurs.put(nomChamp, "Le document "  + " est requis.");
+        					System.out.println("erreurdoc");
+        				}
+        			}
+        			else
         			erreurs.put(nomChamp, "Le champ " + nomChamp + " est requis.");
         		}
 
         		// Vérification de la longueur minimale
-        		if (champConfig.get("minlength") != null) {
+        		if (champConfig.get("minlength") != null && (!nomChamp.equals("document"))) {
         			int minLength = (int) champConfig.get("minlength");
         			if (valeurChamp != null && valeurChamp.length() < minLength) {
         				erreurs.put(nomChamp, "Le champ " + nomChamp + " doit avoir au moins " + minLength + " caractères.");
@@ -166,7 +191,7 @@ public final class ControleDonneesParametreMultiligne {
         		}
 
         		// Vérification de la longueur maximale
-        		if (champConfig.get("maxlength") != null) {
+        		if (champConfig.get("maxlength") != null &&(!nomChamp.equals("document"))) {
         			int maxLength = (int) champConfig.get("maxlength");
         			if (valeurChamp != null && valeurChamp.length() > maxLength) {
         				erreurs.put(nomChamp, "Le champ " + nomChamp + " doit avoir au plus " + maxLength + " caractères.");
@@ -230,7 +255,6 @@ public final class ControleDonneesParametreMultiligne {
 			  { erreurs.put("nom", "Le nom existe déjà.");
 			  }
 		  }
-		  System.out.println(entiteInstance.toString());
 		return entiteInstance;
 	}
 

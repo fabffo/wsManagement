@@ -11,8 +11,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ws.beans.Client;
 import com.ws.beans.Organisation;
 
 public interface ClientDao {
-	    List<Organisation> listerClient() throws DaoException;
+
+	List<Client> listerClient() throws DaoException;
+
+	int getNoOfRecords();
+
+	Integer getIntegerRecords();
+
+	Client trouverClientParId(int id);
+
 }

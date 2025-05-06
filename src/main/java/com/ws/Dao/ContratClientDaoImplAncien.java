@@ -22,10 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.ContratClient;
+import com.ws.beans.ContratClientAncien;
 import com.ws.configuration.DatasourceH;
 
-public class ContratClientDaoImpl implements ContratClientDao {
+public class ContratClientDaoImplAncien implements ContratClientDaoAncien {
 	private DaoFactory daoFactory;
 
 	// date du jour
@@ -36,7 +36,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 
 	// Récupération paramètres
 
-	ContratClientDaoImpl(DaoFactory daoFactory) {
+	ContratClientDaoImplAncien(DaoFactory daoFactory) {
 		this.daoFactory = daoFactory;
 	}
 
@@ -91,7 +91,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// ====CRUD CREER
 	// ================================================================================
 	@Override
-	public void ajouterContratClient(ContratClient contratClient, String chemin_absolu_document_defaut,
+	public void ajouterContratClient(ContratClientAncien contratClient, String chemin_absolu_document_defaut,
 			String chemin_absolu_document_reel, String chemin_relatif_document_reel) throws DaoException {
 		// == Initialisation paramètres
 		int lastid = 0;
@@ -193,7 +193,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// CRUD MODIFIER ENREGISTREMENT
 	//===============================================================================
 	@Override
-	public void modifierContratClient(ContratClient contratClient, String cheminRelatif_AvantModif, String cheminAbsolu_avantModif, String document_avantModif ) throws DaoException {
+	public void modifierContratClient(ContratClientAncien contratClient, String cheminRelatif_AvantModif, String cheminAbsolu_avantModif, String document_avantModif ) throws DaoException {
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
 		listerTypeContrat();
@@ -255,7 +255,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// CRUD COPIER ENREGISTREMENT
 	// =================================================================================
 	@Override
-	public void copierContratClient(ContratClient contratClient, String cheminRelatif_AvantModif, String cheminAbsolu_avantModif, String document_avantModif) throws DaoException {
+	public void copierContratClient(ContratClientAncien contratClient, String cheminRelatif_AvantModif, String cheminAbsolu_avantModif, String document_avantModif) throws DaoException {
 		// == Initialisation paramètres
 		int lastid = 0;
 		listerTypeContrat();
@@ -382,7 +382,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// ANNULER CONTRATCLIENT
 	// =================================================================================
 	@Override
-	public void annulerContratClient(ContratClient contratClient) throws DaoException {
+	public void annulerContratClient(ContratClientAncien contratClient) throws DaoException {
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
 		listerTypeContrat();
@@ -424,7 +424,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// TERMINER CONTRATCLIENT
 	// =================================================================================
 	@Override
-	public void terminerContratClient(ContratClient contratClient) throws DaoException {
+	public void terminerContratClient(ContratClientAncien contratClient) throws DaoException {
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
 		listerTypeContrat();
@@ -467,7 +467,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 		// versionner CONTRATCLIENT
 		// =================================================================================
 		@Override
-		public void versionnerContratClient(ContratClient contratClient) throws DaoException {
+		public void versionnerContratClient(ContratClientAncien contratClient) throws DaoException {
 			Connection connexion = null;
 			PreparedStatement preparedStatement = null;
 			listerTypeContrat();
@@ -520,7 +520,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 		// RENOMMER CONTRATCLIENT
 		// =================================================================================
 		@Override
-		public void renommerContratClient(ContratClient contratClient) throws DaoException {
+		public void renommerContratClient(ContratClientAncien contratClient) throws DaoException {
 			Connection connexion = null;
 			PreparedStatement preparedStatement = null;
 			listerTypeContrat();
@@ -563,8 +563,8 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// ====LISTER LES ENREGISTREMENTS
 	// ================================================================================
 	@Override
-	public List<ContratClient> listerContratClient() throws DaoException {
-		List<ContratClient> contratClients = new ArrayList<ContratClient>();
+	public List<ContratClientAncien> listerContratClient() throws DaoException {
+		List<ContratClientAncien> contratClients = new ArrayList<ContratClientAncien>();
 		Connection connexion = null;
 		Statement statement = null;
 		ResultSet resultat = null;
@@ -580,7 +580,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 				String type_contrat = resultat.getString("type_contrat");
 				String documentClient = resultat.getString("documentClient");
 
-				ContratClient contratClient = new ContratClient();
+				ContratClientAncien contratClient = new ContratClientAncien();
 				contratClient.setId_contrat(id_contrat);
 				contratClient.setId_avenant(id_avenant);
 				contratClient.setType_contrat(type_contrat);
@@ -607,8 +607,8 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// ====CRUD LIRE UN ENREGISTREMENT SPECIFIQUE VIA SON ID_CONTRAT ET
 	// ID_AVENANT====================================
 	@Override
-	public ContratClient trouverIdVersion(int id_contrat, int id_avenant) throws DaoException {
-		ContratClient contratClient = new ContratClient();
+	public ContratClientAncien trouverIdVersion(int id_contrat, int id_avenant) throws DaoException {
+		ContratClientAncien contratClient = new ContratClientAncien();
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultat = null;
@@ -665,7 +665,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// ====rechercher et lister les enregistrements
 	// ==================================================================
 	@Override
-	public List<ContratClient> rechercheContratClients(int offset, int noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne,
+	public List<ContratClientAncien> rechercheContratClients(int offset, int noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne,
 			String tag_statut, String type_entite) {
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
@@ -679,15 +679,15 @@ public class ContratClientDaoImpl implements ContratClientDao {
 		String query2 = "select SQL_CALC_FOUND_ROWS avenantclient.id_contrat, avenantclient.id_avenant, avenantclient.statut, avenantclient.document, avenantclient.cheminRelatif, avenantclient.cheminRelatif, avenantclient.nom_contrat, avenantclient.type_contrat, avenantclient.id_referent_collaborateur,  avenantclient.id_client, avenantclient.date_demarrage, avenantclient.commentaire, societe.raison_sociale from avenantClient  "
 				+ "LEFT JOIN societe on avenantclient.id_client=societe.id where societe.type='" +type_entite+"' "+ "and avenantClient.type_entite='"+type_entite+"' "
 				+ tag_where_statut + " ORDER BY " + select_tri + " limit " + offset + ", " + noOfRecords;
-		List<ContratClient> list = new ArrayList<ContratClient>();
-		ContratClient contratClient = null;
+		List<ContratClientAncien> list = new ArrayList<ContratClientAncien>();
+		ContratClientAncien contratClient = null;
 		try {
 			connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement(query2);
 			rs = preparedStatement.executeQuery();
 
 			while (rs.next()) {
-				contratClient = new ContratClient();
+				contratClient = new ContratClientAncien();
 				contratClient.setId_contrat(rs.getInt(1));
 				contratClient.setId_avenant(rs.getInt(2));
 				contratClient.setStatut(rs.getString(3));
@@ -732,7 +732,7 @@ public class ContratClientDaoImpl implements ContratClientDao {
 	// ====rechercher et lister les enregistrements suivant like
 	// ======================================================================
 	@Override
-	public List<ContratClient> rechercheLikeContratClients(int offset, int noOfRecords, String select_tri,
+	public List<ContratClientAncien> rechercheLikeContratClients(int offset, int noOfRecords, String select_tri,
 			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite) {
 		Connection connexion = null;
 		PreparedStatement preparedStatement = null;
@@ -746,14 +746,14 @@ public class ContratClientDaoImpl implements ContratClientDao {
 				+ "LEFT JOIN societe on avenantclient.id_client=societe.id where societe.type='" +type_entite+"' "+ "and avenantClient.type_entite='"+type_entite+"' "
 				+ tag_where_statut + " and " + select_like + " ORDER BY " + select_tri + " limit " + offset + ", "
 				+ noOfRecords;
-		List<ContratClient> list = new ArrayList<ContratClient>();
-		ContratClient contratClient = null;
+		List<ContratClientAncien> list = new ArrayList<ContratClientAncien>();
+		ContratClientAncien contratClient = null;
 		try {
 			connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement(query2);
 			rs = preparedStatement.executeQuery();
 			while (rs.next()) {
-				contratClient = new ContratClient();
+				contratClient = new ContratClientAncien();
 				contratClient.setId_contrat(rs.getInt(1));
 				contratClient.setId_avenant(rs.getInt(2));
 				contratClient.setStatut(rs.getString(3));

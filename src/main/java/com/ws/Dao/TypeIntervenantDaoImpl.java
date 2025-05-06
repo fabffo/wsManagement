@@ -218,7 +218,110 @@ public class TypeIntervenantDaoImpl implements TypeIntervenantDao {
         }
         return typeIntervenants;
     }
+    @Override
+    public List<TypeIntervenant> listerTypeIntervenantClient() throws DaoException {
+        List<TypeIntervenant> typeIntervenants = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
 
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT id, nom, libelle FROM typeIntervenant;";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeIntervenant typeIntervenant = new TypeIntervenant();
+                typeIntervenant.setId(resultat.getInt("id"));
+                typeIntervenant.setNom(resultat.getString("nom"));
+                typeIntervenant.setLibelle(resultat.getString("libelle"));
+                typeIntervenants.add(typeIntervenant);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeIntervenant"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeIntervenants;
+    }
+    @Override
+    public List<TypeIntervenant> listerTypeIntervenantFournisseur() throws DaoException {
+        List<TypeIntervenant> typeIntervenants = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT id, nom, libelle FROM typeIntervenant;";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeIntervenant typeIntervenant = new TypeIntervenant();
+                typeIntervenant.setId(resultat.getInt("id"));
+                typeIntervenant.setNom(resultat.getString("nom"));
+                typeIntervenant.setLibelle(resultat.getString("libelle"));
+                typeIntervenants.add(typeIntervenant);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeIntervenant"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeIntervenants;
+    }
+    @Override
+    public List<TypeIntervenant> listerTypeIntervenantSalarie() throws DaoException {
+        List<TypeIntervenant> typeIntervenants = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT id, nom, libelle FROM typeIntervenant;";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeIntervenant typeIntervenant = new TypeIntervenant();
+                typeIntervenant.setId(resultat.getInt("id"));
+                typeIntervenant.setNom(resultat.getString("nom"));
+                typeIntervenant.setLibelle(resultat.getString("libelle"));
+                typeIntervenants.add(typeIntervenant);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeIntervenant"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeIntervenants;
+    }
+    @Override
+    public List<TypeIntervenant> listerTypeIntervenantInterne() throws DaoException {
+        List<TypeIntervenant> typeIntervenants = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT id, nom, libelle FROM typeIntervenant;";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeIntervenant typeIntervenant = new TypeIntervenant();
+                typeIntervenant.setId(resultat.getInt("id"));
+                typeIntervenant.setNom(resultat.getString("nom"));
+                typeIntervenant.setLibelle(resultat.getString("libelle"));
+                typeIntervenants.add(typeIntervenant);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeIntervenant"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeIntervenants;
+    }
     	// =================================================================================
 		// TROUVER TYPEINTERVENANT PAR ID
 		// =================================================================================

@@ -15,7 +15,7 @@ import java.util.List;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import com.ws.Dao.ContratDao;
+import com.ws.Dao.ContratDaoAncien;
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
 import com.ws.Dao.EcritureBanque_importDao;

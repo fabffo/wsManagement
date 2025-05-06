@@ -7,6 +7,10 @@
 
 package com.ws.servlets.parametre;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -31,6 +35,7 @@ import com.ws.beans.Parametre_ecranCrud_entete;
 import com.ws.beans.Parametre_ecranGestion_entete;
 import com.ws.beans.Parametre_entete;
 import com.ws.beans.Tva;
+import com.ws.configuration.Configuration;
 import com.ws.forms.parametre.ControleDonneesParametre;
 import com.ws.forms.parametre.ControleDonneesParametreMultiligne;
 
@@ -38,6 +43,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 public class CrudParametreMultiligne extends HttpServlet {
 
@@ -67,9 +73,25 @@ public class CrudParametreMultiligne extends HttpServlet {
     private String supprimerEntite; // exemple supprimer tva
     private String renommerEntite; // exemple renommer tva
     private String ajouterEntite; // exemple ajouter tva
+    private String annulerEntite; // exemple annuler tva;
+    private String terminerEntite;// exemple terminer tva;
+    private String faire_avenantEntite;// exemple faire avenant tva;
     private Integer classe_id;
     private DaoFactory daoFactory;
     private String getEntiteDao;
+
+    private String action;
+    private String[] parts;
+    private String cheminFichier;
+    private int tampon_fichier;
+    private String fichierSortie;
+    String description;
+	String nomFichier;
+	String nomChamp;
+	private Configuration configuration = new Configuration();
+	public static final int TAILLE_TAMPON = 10240;
+	public static String chemin_relatif_document_defaut;
+	public static String chemin_absolu_document_defaut;
 
     public void init() throws ServletException {
         daoFactory = DaoFactory.getInstance();
@@ -97,13 +119,8 @@ public class CrudParametreMultiligne extends HttpServlet {
 
                 // Appel de la méthode pour récupérer les paramètres
                 //List<Map<String, Object>> listeChamps = parametreDao.getParametresChampsEcran(request.getParameter("parametre_nom_programme"), parametre_nom);
-                List<List<Map<String, Object>>> rows = parametreEcranDao.lireParametre_ecranCrud_multiligne(parametreSysteme.getId(), request.getParameter("parametre_nom_programme"), classe, type_entite);
-                for (int i = 0; i < rows.size(); i++) {
-                    System.out.println("Row " + (i + 1) + ":");
-                    for (int j = 0; j < rows.get(i).size(); j++) {
-                        System.out.println("  Map " + (j + 1) + ": " + rows.get(i).get(j));
-                    }
-                }
+                 List<List<Map<String, Object>>> rows = parametreEcranDao.lireParametre_ecranCrud_multiligne(parametreSysteme.getId(), request.getParameter("parametre_nom_programme"), classe, type_entite);
+
                 // Passer la map 'validations' à la JSP
                 request.setAttribute("rows", rows);
 
@@ -122,6 +139,14 @@ public class CrudParametreMultiligne extends HttpServlet {
         } catch (DaoException e) {
             e.printStackTrace();
         }
+    	if ("uploadFile".equals(action)) {
+			try {
+				traiterUpload(request);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
         // Préparation du formulaire et traitement des données
         if (request.getParameter("parametre_nom_programme").equals("copie") || request.getParameter("parametre_nom_programme").equals("ajout") || request.getParameter("parametre_nom_programme").equals("maj") || request.getParameter("parametre_nom_programme").equals("renommage")) {
         	ControleDonneesParametreMultiligne form = new ControleDonneesParametreMultiligne();
@@ -142,7 +167,7 @@ public class CrudParametreMultiligne extends HttpServlet {
             request.setAttribute(ATT_FORM, form);
 
             // Si le formulaire est valide, mise à jour de la TVA
-            if (form.getErreurs().isEmpty()) {
+            if (form.getErreurs().isEmpty() && !"uploadFile".equals(action)) {
                 try {
                     daoInstance = daoFactory.getClass().getMethod(getEntiteDao).invoke(daoFactory);
 
@@ -175,7 +200,11 @@ public class CrudParametreMultiligne extends HttpServlet {
                     e.printStackTrace();
                     request.setAttribute("erreur", "Erreur lors de la mise à jour : " + e.getMessage());
                 }
-            } else {
+            } else if ("uploadFile".equals(action)) {
+            	this.getServletContext().getRequestDispatcher(VUE_FORM).forward(request, response);
+            }
+            else
+            {
             	Map<String, String> erreurs = form.getErreurs();
             	for (Map.Entry<String, String> entry : erreurs.entrySet()) {
             	    String fieldName = entry.getKey();
@@ -197,10 +226,51 @@ public class CrudParametreMultiligne extends HttpServlet {
             }
         }
 
+     // appel DAO pour annuler
+        if (request.getParameter("parametre_nom_programme").equals("annulation")) {
+            // Invocation de la méthode modifierTva de manière dynamique
+            try {
+                invokeDynamicMethod(annulerEntite, classe_id);
+                response.sendRedirect(VUE_SUCCES);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // appel DAO pour annuler
+        if (request.getParameter("parametre_nom_programme").equals("fin")) {
+            // Invocation de la méthode modifierTva de manière dynamique
+            try {
+                invokeDynamicMethod(terminerEntite, classe_id);
+                response.sendRedirect(VUE_SUCCES);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // appel DAO pour annuler
+        if (request.getParameter("parametre_nom_programme").equals("avenant")) {
+            // Invocation de la méthode modifierTva de manière dynamique
+            try {
+                invokeDynamicMethod(faire_avenantEntite, classe_id);
+                response.sendRedirect(VUE_SUCCES);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
     }
 
     // Initialisation de l'écran, récupération des détails de paramètres
     private void initEcran(HttpServletRequest request) throws DaoException, ServletException {
+    	//initialisation des variables de session
+    	request.getSession().removeAttribute("document");
+
+    	// --------- action
+    			action = request.getParameter("action");
     	// gestion du paramètre type d'entite  pour filter les contrats
     			// =============================================================
     			if (request.getParameter("type_entite") != null) {
@@ -255,6 +325,7 @@ public class CrudParametreMultiligne extends HttpServlet {
         }
                 // Récupération des détails des paramètres pour configurer l'interface
         		parametreSysteme = parametreEcranDao.lireParametreSysteme(parametre_nom);
+        		System.out.println("parametre_nom"+parametre_nom+" idparam "+parametreSysteme.getId()+" parametre_nom_programme "+parametre_nom_programme);
         		parametre_ecranCrud_entete = parametreEcranDao.lireParametre_ecranCrud_entete(parametreSysteme.getId(), parametre_nom_programme);
         		largeur_ecran = parametre_ecranCrud_entete.getLargeur_ecran();
         		request.setAttribute("largeur_ecran", largeur_ecran);
@@ -270,6 +341,9 @@ public class CrudParametreMultiligne extends HttpServlet {
                 supprimerEntite = "supprimer"+parametre_nom;
                 renommerEntite = "renommer"+parametre_nom;
                 ajouterEntite = "ajouter"+parametre_nom;
+                annulerEntite = "annuler"+parametre_nom;
+                terminerEntite = "terminer"+parametre_nom;
+                faire_avenantEntite = "faire_avenant"+parametre_nom;
 
 
 
@@ -289,8 +363,115 @@ public class CrudParametreMultiligne extends HttpServlet {
         for (int i = 0; i < params.length; i++) {
             paramTypes[i] = params[i].getClass();
                }
+        System.out.println("methodeappeler"+methodName+paramTypes);
         	Method method = daoInstance.getClass().getMethod(methodName, paramTypes);
         	 return method.invoke(daoInstance, params);
     }
+
+ // ===========================================================================
+ 	// ============ ECRIRE FICHIER
+ 	// ===========================================================================
+ 	private void ecrireFichier(Part part, String nomFichier, String cheminabsolu, String cheminrelatif)
+ 			throws IOException {
+ 		BufferedInputStream entree = null;
+ 		BufferedOutputStream sortie = null;
+ 		int tampon_fichier = configuration.getTampon();
+ 		try {
+ 			entree = new BufferedInputStream(part.getInputStream(), TAILLE_TAMPON);
+ 			sortie = new BufferedOutputStream(new FileOutputStream(new File(cheminabsolu + nomFichier)),
+ 					TAILLE_TAMPON);
+
+ 			byte[] tampon = new byte[TAILLE_TAMPON];
+ 			int longueur;
+ 			while ((longueur = entree.read(tampon)) > 0) {
+ 				sortie.write(tampon, 0, longueur);
+ 			}
+ 			// Appel pour rafraîchir le répertoire
+ 			File uploads = new File(cheminabsolu);
+ 			refreshDirectory(uploads);
+
+ 		} finally {
+ 			try {
+ 				sortie.close();
+ 			} catch (IOException ignore) {
+ 			}
+ 			try {
+ 				entree.close();
+ 			} catch (IOException ignore) {
+ 			}
+ 		}
+ 	}
+
+ 	// ==========================================================================
+ 	// ============ RECUPERER NOM FICHIER
+ 	// ===========================================================================
+ 	private static String getNomFichier(Part part) {
+ 		for (String contentDisposition : part.getHeader("content-disposition").split(";")) {
+ 			if (contentDisposition.trim().startsWith("filename")) {
+ 				return contentDisposition.substring(contentDisposition.indexOf('=') + 1).trim().replace("\"", "");
+ 			}
+ 		}
+ 		return null;
+ 	}
+
+ 	// ===========================================================================
+ 	// ============ RAFRAICHIR REPERTOIRE
+ 	// ===========================================================================
+ 	private void refreshDirectory(File directory) {
+ 		// Récupérer la liste des fichiers dans le répertoire
+ 		File[] files = directory.listFiles();
+ 		if (files != null) {
+ 			for (File file : files) {
+ 			}
+ 		}
+ 	}
+
+ // ===========================================================================
+ 	// ============ TRAITER UPLOAD
+ 	// ===========================================================================
+ 	private void traiterUpload(HttpServletRequest request) throws Exception {
+ 		// récupérer parametre id type contrat
+ 		//String parametre_nom = request.getParameter("parametre_nom");
+ 		System.out.println("parametre_nom"+parametre_nom);
+ 		String id_typeContrat = request.getParameter("type"+parametre_nom);
+ 		Map<String, Map<String, String>> contracts = (Map<String, Map<String, String>>) getServletContext().getAttribute("cheminsContrats");
+ 		if (contracts != null && contracts.containsKey(id_typeContrat)) {
+			Map<String, String> contractPaths = contracts.get(id_typeContrat);
+			chemin_relatif_document_defaut = contractPaths.get("cheminRelatif");
+			chemin_absolu_document_defaut = contractPaths.get("cheminAbsolu");
+		} else {
+		}
+ 		if (contracts != null) {
+ 		    for (Map.Entry<String, Map<String, String>> entry : contracts.entrySet()) {
+ 		        String contractId = entry.getKey();
+ 		        Map<String, String> contractDetails = entry.getValue();
+ 		    }
+ 		} else {
+ 		    System.out.println("Aucun contrat trouvé.");
+ 		}
+ 		// On récupère le champ description comme d'habitude
+ 		description = request.getParameter("description");
+ 		request.setAttribute("description", description);
+
+ 		// On récupère le champ du fichier
+ 		Part part = request.getPart("fichier");
+
+ 		// On vérifie qu'on a bien reçu un fichier
+ 		nomFichier = getNomFichier(part);
+
+ 		// Si on a bien un fichier
+ 		if (nomFichier != null && !nomFichier.isEmpty()) {
+ 			nomChamp = part.getName();
+ 			request.setAttribute("NomfichierRecu", nomChamp);
+ 			// Corrige un bug du fonctionnement d'Internet Explorer
+ 			nomFichier = nomFichier.substring(nomFichier.lastIndexOf('/') + 1)
+ 					.substring(nomFichier.lastIndexOf('\\') + 1);
+ 			nomFichier = nomFichier.replaceAll("\\s+", "");
+ 			// On écrit définitivement le fichier sur le disque
+ 			ecrireFichier(part, nomFichier, chemin_absolu_document_defaut, chemin_relatif_document_defaut);
+ 			request.getSession().setAttribute("document", chemin_relatif_document_defaut + nomFichier);
+ 			System.out.println("le docensession"+(String) request.getSession().getAttribute("document"));
+ 		}
+ 	}
 
 }

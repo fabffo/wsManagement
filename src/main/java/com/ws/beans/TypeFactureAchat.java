@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 ////    PROJET LOGICIEL FACTURATION COMPTABILITE                          ///
-///     PROGRAMME BEAN COLLABORATEUR                                      ///
+///     PROGRAMME BEAN TYPE CONTRAT                                       ///
 ////    Créé par Fabrice FOUGERY le 29/04/2024                            ///
 ////    Modifié par ....... .... le ../../....                            ///
 /////////////////////////////////////////////////////////////////////////////
@@ -9,41 +9,27 @@ package com.ws.beans;
 
 import java.util.Date;
 
-public class AccordOrganisation {
+public class TypeFactureAchat {
 
 	private int id;
-	private int id_unique;
-	private int version;
 	private String nom;
-	private int typeContrat;
-	private int statut;
-	private int organisation;
-	private String date_demarrage;
-	private String date_fin;
-	private String commentaire;
+	private String libelle;
+	private int entite;
+	private int activite;
+	private String cheminRelatif;
+	private String cheminAbsolu;
+	private int typeIntervenant;
 	private String usermodification;
     private Date datemodification;
     private String pgmmodification;
     private String usercreation;
     private Date datecreation;
     private String pgmcreation;
-	public int getId_unique() {
-		return id_unique;
-	}
-	public void setId_unique(int id_unique) {
-		this.id_unique = id_unique;
-	}
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public int getVersion() {
-		return version;
-	}
-	public void setVersion(int version) {
-		this.version = version;
 	}
 	public String getNom() {
 		return nom;
@@ -51,41 +37,41 @@ public class AccordOrganisation {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public int getTypeContrat() {
-		return typeContrat;
+	public String getLibelle() {
+		return libelle;
 	}
-	public void setTypeContrat(int typeContrat) {
-		this.typeContrat = typeContrat;
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
 	}
-	public int getStatut() {
-		return statut;
+	public int getEntite() {
+		return entite;
 	}
-	public void setStatut(int statut) {
-		this.statut = statut;
+	public void setEntite(int entite) {
+		this.entite = entite;
 	}
-	public int getOrganisation() {
-		return organisation;
+	public int getActivite() {
+		return activite;
 	}
-	public void setOrganisation(int organisation) {
-		this.organisation = organisation;
+	public void setActivite(int activite) {
+		this.activite = activite;
 	}
-	public String getDate_demarrage() {
-		return date_demarrage;
+	public String getCheminRelatif() {
+		return cheminRelatif;
 	}
-	public void setDate_demarrage(String date_demarrage) {
-		this.date_demarrage = date_demarrage;
+	public void setCheminRelatif(String cheminRelatif) {
+		this.cheminRelatif = cheminRelatif;
 	}
-	public String getDate_fin() {
-		return date_fin;
+	public String getCheminAbsolu() {
+		return cheminAbsolu;
 	}
-	public void setDate_fin(String date_fin) {
-		this.date_fin = date_fin;
+	public void setCheminAbsolu(String cheminAbsolu) {
+		this.cheminAbsolu = cheminAbsolu;
 	}
-	public String getCommentaire() {
-		return commentaire;
+	public int getTypeIntervenant() {
+		return typeIntervenant;
 	}
-	public void setCommentaire(String commentaire) {
-		this.commentaire = commentaire;
+	public void setTypeIntervenant(int typeIntervenant) {
+		this.typeIntervenant = typeIntervenant;
 	}
 	public String getUsermodification() {
 		return usermodification;
@@ -125,9 +111,9 @@ public class AccordOrganisation {
 	}
 	@Override
 	public String toString() {
-		return "AccordOrganisation [id=" + id + ", version=" + version + ", nom=" + nom + ", typeContrat=" + typeContrat
-				+ ", statut=" + statut + ", Organisation=" + organisation + ", date_demarrage=" + date_demarrage + ", date_fin="
-				+ date_fin + ", commentaire=" + commentaire + ", usermodification=" + usermodification
+		return "TypeFactureAchat [id=" + id + ", nom=" + nom + ", libelle=" + libelle + ", entite=" + entite + ", activite="
+				+ activite + ", cheminRelatif=" + cheminRelatif + ", cheminAbsolu=" + cheminAbsolu
+				+ ", typeIntervenant=" + typeIntervenant + ", usermodification=" + usermodification
 				+ ", datemodification=" + datemodification + ", pgmmodification=" + pgmmodification + ", usercreation="
 				+ usercreation + ", datecreation=" + datecreation + ", pgmcreation=" + pgmcreation + "]";
 	}

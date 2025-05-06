@@ -49,4 +49,6 @@ public interface EntiteDao {
 
 	List<Entite> listerEntiteClient() throws DaoException;
 
+	List<Entite> listerEntiteInterne() throws DaoException;
+
 }

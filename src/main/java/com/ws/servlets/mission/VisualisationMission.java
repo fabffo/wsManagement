@@ -24,7 +24,7 @@ import java.util.Map;
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
 import com.ws.Dao.MissionDao;
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Mission;
 import com.ws.beans.Tva;
 import com.ws.beans.TypePrix;
@@ -323,7 +323,7 @@ public class VisualisationMission extends HttpServlet {
 
 			// ---------contrat ---------------------
 			String query = "";
-			List<Contrat> listContrat = new ArrayList<Contrat>();
+			List<ContratAncien> listContrat = new ArrayList<ContratAncien>();
 
 			Connection connection = daoFactory.getConnection();
 			Statement statement = connection.createStatement();
@@ -334,7 +334,7 @@ public class VisualisationMission extends HttpServlet {
 			System.out.println(query);
 			resultSet = statement.executeQuery(query);
 			if (resultSet.next()) {
-				Contrat contrat = new Contrat();
+				ContratAncien contrat = new ContratAncien();
 				contrat.setId(resultSet.getInt(1));
 				contrat.setCommentaire(resultSet.getString(2));
 				request.setAttribute("contrat", contrat);

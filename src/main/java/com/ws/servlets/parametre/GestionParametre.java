@@ -394,6 +394,7 @@ public class GestionParametre extends HttpServlet {
 		// Récupération des détails des paramètres pour configurer l'interface
 				//ParametreSysteme parametreSysteme = parametreDao.lireEnteteParametre(parametre_nom);
 				ParametreSysteme parametreSysteme = parametreEcranDao.lireParametreSysteme(parametre_nom);
+				System.out.println("PARAM"+parametre_nom);
 				//Parametre_ecranGestion_entete parametre_ecranGestion_entete = parametre_ecranGestion_enteteDao.trouverParametre_ecranGestion_entete(parametreSysteme.getId());
 				Parametre_ecranGestion_entete parametre_ecranGestion_entete = parametreEcranDao.lireParametre_ecranGestion_entete(parametreSysteme.getId());
 

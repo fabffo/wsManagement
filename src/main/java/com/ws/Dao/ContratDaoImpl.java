@@ -1,14 +1,5 @@
-/////////////////////////////////////////////////////////////////////////////
-////    PROJET LOGICIEL FACTURATION COMPTABILITE                          ///
-///     PROGRAMME DAO IMPLEMENTATION CONTRATCLIENT                        ///
-////    Créé par Fabrice FOUGERY le 29/04/2024                            ///
-////    Modifié par ....... .... le ../../....                            ///
-/////////////////////////////////////////////////////////////////////////////
-
 package com.ws.Dao;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,921 +8,747 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.ws.beans.Contrat;
-
+import com.ws.beans.Statut;
 
 public class ContratDaoImpl implements ContratDao {
-	private DaoFactory daoFactory;
-
-	// date du jour
-	String dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDateTime.now());
-	private int noOfRecords;
-	Map<String, Integer> type_entiteDictionary = new HashMap<>();
-	Map<String, Integer> societeDictionary = new HashMap<>();
-
-	// Récupération paramètres
-
-	ContratDaoImpl(DaoFactory daoFactory) {
-		this.daoFactory = daoFactory;
-	}
+    private DaoFactory daoFactory;
+    private String dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDateTime.now());
+    private int noOfRecords;
 
 
+	  ContratDaoImpl(DaoFactory daoFactory) { this.daoFactory = daoFactory; }
 
-	// ================================================================================
-	// ====CRUD CREER
-	// ================================================================================
-	@Override
-	public void ajouterContrat(Contrat contrat, String chemin_absolu_document_defaut,
-			String chemin_absolu_document_reel, String chemin_relatif_document_reel, String type_entite) throws DaoException {
-		int lastid =0;
-		// ---------------------- BLOC CONNECTION ----------------------
-		Connection connection = null;
-		ResultSet resultat = null;
-		PreparedStatement preparedStatement= null;
 
-		try {
-			connection = daoFactory.getConnection();
-			connection.setAutoCommit(false); // Début de la transaction
+	  	// =================================================================================
+		// AJOUTER CONTRAT
+		// =================================================================================
+    @Override
+    public void ajouterContrat(Contrat contrat) throws DaoException {
+    	Connection connexion = null;
+    	PreparedStatement preparedStatement = null;
+        ResultSet resultat = null;
+        int lastid_unique =0;
+        int id =0;
+        int statutEnCours = 0; // ID du statut "En-cours"
+        try {
+			connexion = daoFactory.getConnection();
+			connexion.setAutoCommit(false); // Début de la transaction
+			 // ------ Récupérer l'ID du statut "En-cours" ------
+	        String sqlStatut = "SELECT id FROM statut WHERE nom = 'En-cours' LIMIT 1";
+	        preparedStatement = connexion.prepareStatement(sqlStatut);
+	        resultat = preparedStatement.executeQuery();
+	        if (resultat.next()) {
+	            statutEnCours = resultat.getInt("id");
+	        } else {
+	            throw new SQLException("Impossible de récupérer l'ID du statut 'En-cours'.");
+	        }
+	        resultat.close();
+	        preparedStatement.close();
 
 			// ------ On récupère l'id du dernier contrat créé + 1 ------
-			preparedStatement = connection.prepareStatement("SELECT MAX(id) AS id FROM contrat");
+			preparedStatement = connexion.prepareStatement("SELECT MAX(id_unique) AS id_unique FROM contrat");
 			resultat = preparedStatement.executeQuery();
 			if (resultat.next()) {
-				 lastid = resultat.getInt("id") + 1 ;
+				 lastid_unique = resultat.getInt("id_unique") + 1 ;
 			}else {
-				throw new SQLException("Creating contratClient failed, no ID obtained.");
+				throw new SQLException("Coping contratOrganisation failed, no ID obtained.");
 			}
 
 			// ------ On crée les données contrat ------ //
-			preparedStatement = connection.prepareStatement(
-					"INSERT INTO contrat(contrat.version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminAbsolu, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur,  contrat.id_client, contrat.date_demarrage, contrat.commentaire, pgmcreation, datecreation, usercreation, type_entite ) "
-					+ "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			preparedStatement.setInt(1, 1);
-			preparedStatement.setString(2, contrat.getStatut());
-			String ancienNomFichier = "contrat.pdf";
-			String nouveauNomFichier = "contrat_" + contrat.getClient() + "_" + lastid + "_1.pdf";
-			File filetemporaire = new File(chemin_absolu_document_defaut + ancienNomFichier);
-			File fileDefinitif = new File(chemin_absolu_document_reel + nouveauNomFichier);
-			if (	 filetemporaire.renameTo(fileDefinitif)) {
-				filetemporaire = fileDefinitif;
-			};
-			preparedStatement.setString(3, nouveauNomFichier);
-			preparedStatement.setString(4, chemin_relatif_document_reel);
-			preparedStatement.setString(5, chemin_absolu_document_reel);
-			preparedStatement.setString(6, contrat.getNom_contrat());
-			preparedStatement.setString(7, contrat.getType_contrat());
-			preparedStatement.setInt(8, contrat.getId_referent_collaborateur());
-			preparedStatement.setInt(9, contrat.getId_client());
-			preparedStatement.setString(10, dateTime);
-			preparedStatement.setString(11, contrat.getCommentaire());
-			preparedStatement.setString(12, "ContratDao");
-			preparedStatement.setString(13, dateTime);
-			preparedStatement.setString(14, System.getProperty("user.name"));
-			preparedStatement.setString(15, type_entite);
-			int  rowsAffected = preparedStatement.executeUpdate();
-			if (rowsAffected == 0) {
-				throw new DaoException("Insertion dans contrat a échoué, aucune ligne affectée.");
-			}
+            String sql = "INSERT INTO contrat(id_unique, version, id, nom, typeContrat, statut, organisation, personnel, date_demarrage, date_fin, commentaire,  document, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setInt(1, lastid_unique);
+            preparedStatement.setInt(2, 1);
+            id = lastid_unique*10 + 1;
+            preparedStatement.setInt(3, id);
+            preparedStatement.setString(4, contrat.getNom());
+            preparedStatement.setInt(5, contrat.getTypeContrat());
+            preparedStatement.setInt(6, statutEnCours);// Utilisation de l'ID du statut "En-cours"
+            preparedStatement.setInt(7, contrat.getOrganisation());
+            preparedStatement.setInt(8, contrat.getPersonnel());
+            preparedStatement.setString(9, contrat.getDate_demarrage());
+            preparedStatement.setString(10, contrat.getDate_fin());
+            preparedStatement.setString(11, contrat.getCommentaire());
+            preparedStatement.setString(12, contrat.getDocument());
+            preparedStatement.setString(13, "ContratDao");
+            preparedStatement.setString(14, dateTime);
+            preparedStatement.setString(15, System.getProperty("user.name"));
+            System.out.println(preparedStatement+"statut"+statutEnCours);
+            preparedStatement.executeUpdate();
+            connexion.commit();
+        } catch (SQLException e) {
+            if (connexion != null) {
+                try {
+                    connexion.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Rollback failed: " + ex.getMessage());
+                }
+            }
+            throw new DaoException("Impossible de copier l'enregistrement avec la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
 
-			connection.commit(); // Valide la transaction
+    	// =================================================================================
+		// MODIFIER CONTRAT
+		// =================================================================================
+    @Override
+    public void modifierContrat(Contrat contrat) throws DaoException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        int id_unique =0;
+        int version = 0;
+        int id = contrat.getId();
+     // Retrouver id et version
+        id_unique = id / 10;        // Division entière pour obtenir l'id
+        version = id % 10;  // Modulo pour obtenir la version
 
-		} catch (SQLException e) {
-			if (connection != null) {
-				try {
-					connection.rollback(); // Annule la transaction en cas d'erreur
-				} catch (SQLException rollbackEx) {
-					rollbackEx.printStackTrace();
-				}
-			}
-			e.printStackTrace();
-		} finally {
-			// Fermeture des ressources
-			if (resultat != null) {
-				try {
-					resultat.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+        // Afficher les résultats
+         try {
+        	connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
+            String sql = "UPDATE contrat SET nom=?, typeContrat=?, statut=?, organisation=?, personnel=?, date_demarrage=?, date_fin=?, commentaire=?, document=?, pgmmodification=?, datemodification=?, usermodification=? WHERE id_unique=? and version=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setString(1, contrat.getNom());
+            preparedStatement.setInt(2, contrat.getTypeContrat());
+            preparedStatement.setInt(3, contrat.getStatut());
+            preparedStatement.setInt(4, contrat.getOrganisation());
+            preparedStatement.setInt(5, contrat.getPersonnel());
+            preparedStatement.setString(6, contrat.getDate_demarrage());
+            preparedStatement.setString(7, contrat.getDate_fin());
+            preparedStatement.setString(8, contrat.getCommentaire());
+            preparedStatement.setString(9, contrat.getDocument());
+            preparedStatement.setString(10, "ContratDao");
+            preparedStatement.setString(11, dateTime);
+            preparedStatement.setString(12, System.getProperty("user.name"));
+            preparedStatement.setInt(13, id_unique);
+            preparedStatement.setInt(14, version);
+            preparedStatement.executeUpdate();
+            connexion.commit();
+        } catch (SQLException e) {
+            if (connexion != null) {
+                try {
+                    connexion.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Rollback failed: " + ex.getMessage());
+                }
+            }
+            throw new DaoException("Impossible de mettre à jour l'enregistrement avec la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
 
-
-	}
-
-	//===============================================================================
-	// CRUD MODIFIER ENREGISTREMENT
-	//===============================================================================
-	@Override
-	public void modifierContrat(Contrat contrat, String cheminRelatif_AvantModif, String cheminAbsolu_avantModif, String document_avantModif ) throws DaoException {
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
-
-		String nouveauNomFichier = "contrat_" + contrat.getClient() + "_" + contrat.getId() + "_" +contrat.getVersion() + ".pdf";
-		File filetemporaire = new File(cheminAbsolu_avantModif + document_avantModif);
-		File fileDefinitif = new File(contrat.getCheminAbsolu() + nouveauNomFichier);
-		if (	 filetemporaire.renameTo(fileDefinitif)) {
-			filetemporaire = fileDefinitif;
-		};
-
-		try {
+    	// =================================================================================
+  		// COPIER CONTRAT
+  		// =================================================================================
+    @Override
+    public void copierContrat(Contrat contrat) throws DaoException {
+    	Connection connexion = null;
+    	PreparedStatement preparedStatement = null;
+        ResultSet resultat = null;
+        int lastid_unique =0;
+        int id =0;
+        int statutEnCours = 0; // ID du statut "En-cours"
+        try {
 			connexion = daoFactory.getConnection();
-
-			preparedStatement = connexion.prepareStatement(
-					"UPDATE contrat SET contrat.statut=?, contrat.document=?, "
-							+ "contrat.cheminRelatif=?, contrat.cheminAbsolu=?, contrat.nom_contrat=?, "
-							+ "contrat.type_contrat=?, contrat.id_referent_collaborateur=?,  "
-							+ "contrat.id_client=?, contrat.date_demarrage=?, contrat.commentaire=?, "
-							+ "contrat.pgmmodification=?, contrat.datemodification=?, contrat.usermodification=?, contrat.type_entite=? where contrat.id=? and contrat.version=?;");
-			preparedStatement.setString(1, contrat.getStatut());
-			preparedStatement.setString(2, nouveauNomFichier);
-			preparedStatement.setString(3, contrat.getCheminRelatif());
-			preparedStatement.setString(4, contrat.getCheminAbsolu());
-			preparedStatement.setString(5, contrat.getNom_contrat());
-			preparedStatement.setString(6, contrat.getType_contrat());
-			preparedStatement.setInt(7, contrat.getId_referent_collaborateur());
-			preparedStatement.setInt(8, contrat.getId_client());
-			preparedStatement.setString(9, contrat.getDate_demarrage());
-			preparedStatement.setString(10, contrat.getCommentaire());
-			preparedStatement.setString(11, "ContratDao");
-			preparedStatement.setString(12, dateTime);
-			preparedStatement.setString(13, System.getProperty("user.name"));
-			preparedStatement.setInt(14, contrat.getId());
-			preparedStatement.setInt(15, contrat.getVersion());
-			preparedStatement.setString(16, contrat.getType_entite());
-			preparedStatement.executeUpdate();
-			connexion.commit();
-		} catch (SQLException e) {
-			try {
-				if (connexion != null) {
-					connexion.rollback();
-				}
-			} catch (SQLException e2) {
-			}
-			throw new DaoException("Impossible de maj enregistrement avec la table contratt" + e);
-		} finally {
-			try {
-				if (connexion != null) {
-					connexion.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException("Impossible de maj enregistrement avec la table contratt" + e);
-			}
-		}
-	}
-
-	// =================================================================================
-	// CRUD COPIER ENREGISTREMENT
-	// =================================================================================
-	@Override
-	public void copierContrat(Contrat contrat, String cheminRelatif_AvantModif, String cheminAbsolu_avantModif, String document_avantModif, String type_entite) throws DaoException {
-		int lastid = 0;
-		// ---------------------- BLOC CONNECTION ----------------------
-		Connection connection = null;
-		ResultSet resultat = null;
-		PreparedStatement preparedStatement= null;
-		try {
-			connection = daoFactory.getConnection();
-			connection.setAutoCommit(false); // Début de la transaction
+			connexion.setAutoCommit(false); // Début de la transaction
+			 // ------ Récupérer l'ID du statut "En-cours" ------
+	        String sqlStatut = "SELECT id FROM statut WHERE nom = 'En-cours' LIMIT 1";
+	        preparedStatement = connexion.prepareStatement(sqlStatut);
+	        resultat = preparedStatement.executeQuery();
+	        if (resultat.next()) {
+	            statutEnCours = resultat.getInt("id");
+	        } else {
+	            throw new SQLException("Impossible de récupérer l'ID du statut 'En-cours'.");
+	        }
+	        resultat.close();
+	        preparedStatement.close();
 
 			// ------ On récupère l'id du dernier contrat créé + 1 ------
-			preparedStatement = connection.prepareStatement("SELECT MAX(id) AS id FROM contratclient");
+			preparedStatement = connexion.prepareStatement("SELECT MAX(id_unique) AS id_unique FROM contrat");
 			resultat = preparedStatement.executeQuery();
 			if (resultat.next()) {
-				lastid = resultat.getInt("id")+1;
+				 lastid_unique = resultat.getInt("id_unique") + 1 ;
 			}else {
-				throw new SQLException("Creating contrat failed, no ID obtained.");
+				throw new SQLException("Coping contratOrganisation failed, no ID obtained.");
 			}
 
-			// ------ On crée les données contrat dans contrat ------ //
-			preparedStatement = connection.prepareStatement(
-					"INSERT INTO contrat(contrat.version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminAbsolu, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur,  contrat.id_client, contrat.date_demarrage, contrat.commentaire, pgmcreation, datecreation, usercreation, type_entite ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?);");
-			preparedStatement.setInt(1, 1);
-			preparedStatement.setString(2, contrat.getStatut());
-			String nouveauNomFichier = "contrat_" + contrat.getClient() + "_" + lastid + "_1.pdf";
-			File filetemporaire = new File(cheminAbsolu_avantModif + document_avantModif);
-			File fileDefinitif = new File(contrat.getCheminAbsolu() + nouveauNomFichier);
-			if (	 filetemporaire.renameTo(fileDefinitif)) {
-				filetemporaire = fileDefinitif;
-			};
+			// ------ On crée les données contrat ------ //
+            String sql = "INSERT INTO contrat(id_unique, version, id, nom, typeContrat, statut, organisation, personnel, date_demarrage, date_fin, commentaire,  document, pgmcreation, datecreation, usercreation) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setInt(1, lastid_unique);
+            preparedStatement.setInt(2, 1);
+            id = lastid_unique*10 + 1;
+            preparedStatement.setInt(3, id);
+            preparedStatement.setString(4, contrat.getNom());
+            preparedStatement.setInt(5, contrat.getTypeContrat());
+            preparedStatement.setInt(6, statutEnCours);// Utilisation de l'ID du statut "En-cours"
+            preparedStatement.setInt(7, contrat.getOrganisation());
+            preparedStatement.setInt(8, contrat.getPersonnel());
+            preparedStatement.setString(9, contrat.getDate_demarrage());
+            preparedStatement.setString(10, contrat.getDate_fin());
+            preparedStatement.setString(11, contrat.getCommentaire());
+            preparedStatement.setString(12, contrat.getDocument());
+            preparedStatement.setString(13, "ContratDao");
+            preparedStatement.setString(14, dateTime);
+            preparedStatement.setString(15, System.getProperty("user.name"));
+            System.out.println(preparedStatement+"statut"+statutEnCours);
+            preparedStatement.executeUpdate();
+            connexion.commit();
+        } catch (SQLException e) {
+            if (connexion != null) {
+                try {
+                    connexion.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Rollback failed: " + ex.getMessage());
+                }
+            }
+            throw new DaoException("Impossible de copier l'enregistrement avec la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
 
-			preparedStatement.setString(3, nouveauNomFichier);
-			preparedStatement.setString(4, contrat.getCheminRelatif());
-			preparedStatement.setString(5, contrat.getCheminAbsolu());
-			preparedStatement.setString(6, contrat.getNom_contrat());
-			preparedStatement.setString(7, contrat.getType_contrat());
-			preparedStatement.setInt(8, contrat.getId_referent_collaborateur());
-			preparedStatement.setInt(9, contrat.getId_client());
-			preparedStatement.setString(10, dateTime);
-			preparedStatement.setString(11, contrat.getCommentaire());
-			preparedStatement.setString(12, "ContratDao");
-			preparedStatement.setString(13, dateTime);
-			preparedStatement.setString(14, System.getProperty("user.name"));
-			preparedStatement.setString(15, type_entite);
-			int  rowsAffected = preparedStatement.executeUpdate();
-			if (rowsAffected == 0) {
-				throw new DaoException("Insertion dans contrat a échoué, aucune ligne affectée.");
-			}
+    	// =================================================================================
+  		// SUPPRIMER CONTRAT
+  		// =================================================================================
 
-			connection.commit(); // Valide la transaction
+    @Override
+    public void supprimerContrat(Integer id) throws DaoException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        int id_unique =0;
+        int version = 0;
 
-		} catch (SQLException e) {
-			if (connection != null) {
-				try {
-					connection.rollback(); // Annule la transaction en cas d'erreur
-				} catch (SQLException rollbackEx) {
-					rollbackEx.printStackTrace();
-				}
-			}
-			e.printStackTrace();
-		} finally {
-			// Fermeture des ressources
-			if (resultat != null) {
-				try {
-					resultat.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+     // Retrouver id et version
+        id_unique = id / 10;        // Division entière pour obtenir l'id
+        version = id % 10;  // Modulo pour obtenir la version
+
+        try {
+        	connexion = daoFactory.getConnection();
+            String sql = "DELETE FROM contrat WHERE ID_UNIQUE=? and version=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setInt(1, id_unique);
+            preparedStatement.setInt(2, version);
+            preparedStatement.executeUpdate();
+            connexion.commit();
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de supprimer l'enregistrement avec la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, null);
+        }
+    }
 
 
-	}
+    	// =================================================================================
+ 		// RENOMMER CONTRAT
+ 		// =================================================================================
+ 		@Override
+ 		public void renommerContrat(Contrat contrat) throws DaoException {
+ 			Connection connexion = null;
+ 			PreparedStatement preparedStatement = null;
 
-	// =================================================================================
-	// CRUD SUPPRIMER UN ENREGISTREMENT*
-	// =================================================================================
-	@Override
-	public void supprimerContrat(Integer id) throws DaoException {
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
+ 			try {
+ 				connexion = daoFactory.getConnection();
 
-		try {
-			/* Récupération d'une connexion depuis la Factory */
-			connexion = daoFactory.getConnection();
-			preparedStatement = connexion.prepareStatement("DELETE FROM CONTRATCLIENT WHERE ID_CONTRAT=?;");
-			preparedStatement.setInt(1, id);
+ 				preparedStatement = connexion.prepareStatement(
+ 						"UPDATE contrat SET contrat.nom=?, contrat.pgmmodification=?, contrat.datemodification=?,"
+ 								+ " contrat.usermodification=? where contrat.id=?;");
+ 				preparedStatement.setString(1, contrat.getNom());
+ 				preparedStatement.setString(2, "RENOMMER CONTRAT");
+ 				preparedStatement.setString(3, dateTime);
+ 				preparedStatement.setString(4, System.getProperty("user.name"));
+ 				preparedStatement.setInt(5, contrat.getId());
+ 				preparedStatement.executeUpdate();
+ 				connexion.commit();
+ 			} catch (SQLException e) {
+ 				try {
+ 					if (connexion != null) {
+ 						connexion.rollback();
+ 					}
+ 				} catch (SQLException e2) {
+ 				}
+ 				throw new DaoException("Impossible de renommer enregistrement avec la table contratt" + e);
+ 			} finally {
+ 				try {
+ 					if (connexion != null) {
+ 						connexion.close();
+ 					}
+ 				} catch (SQLException e) {
+ 					throw new DaoException("Impossible de renommer enregistrement avec la table contratt" + e);
+ 				}
+ 			}
+ 		}
 
-			preparedStatement.executeUpdate();
-			connexion.commit();
+ 			// =================================================================================
+ 	 		// TERMINER CONTRAT
+ 	 		// =================================================================================
+ 	 		@Override
+ 	 		public void terminerContrat(Integer id_contrat) throws DaoException {
+ 	 			Connection connexion = null;
+ 	 			PreparedStatement preparedStatement = null;
 
-		} catch (SQLException e) {
-			throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-		} finally {
-			try {
-				if (connexion != null) {
-					connexion.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-			}
-		}
+ 	 			try {
+ 	 				connexion = daoFactory.getConnection();
 
-	}
+ 	 				preparedStatement = connexion.prepareStatement(
+ 	 						"UPDATE contrat SET contrat.statut=(SELECT id FROM statut WHERE nom = 'Terminé'), contrat.pgmmodification=?, contrat.datemodification=?,"
+ 	 								+ " contrat.usermodification=? where contrat.id=?;");
+ 	 				preparedStatement.setString(1, "TERMINER CONTRAT");
+ 	 				preparedStatement.setString(2, dateTime);
+ 	 				preparedStatement.setString(3, System.getProperty("user.name"));
+ 	 				preparedStatement.setInt(4, id_contrat);
+ 	 				preparedStatement.executeUpdate();
+ 	 				connexion.commit();
+ 	 			} catch (SQLException e) {
+ 	 				try {
+ 	 					if (connexion != null) {
+ 	 						connexion.rollback();
+ 	 					}
+ 	 				} catch (SQLException e2) {
+ 	 				}
+ 	 				throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
+ 	 			} finally {
+ 	 				try {
+ 	 					if (connexion != null) {
+ 	 						connexion.close();
+ 	 					}
+ 	 				} catch (SQLException e) {
+ 	 					throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
+ 	 				}
+ 	 			}
+ 	 		}
 
-	// =================================================================================
-	// ANNULER CONTRATCLIENT
-	// =================================================================================
-	@Override
-	public void annulerContrat(Contrat contrat) throws DaoException {
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
+ 	 	// =================================================================================
+ 	 		// ANNULER CONTRAT
+ 	 		// =================================================================================
+ 	 		@Override
+ 	 		public void annulerContrat(Integer id_contrat) throws DaoException {
+ 	 			Connection connexion = null;
+ 	 			PreparedStatement preparedStatement = null;
 
-		try {
-			connexion = daoFactory.getConnection();
+ 	 			try {
+ 	 				connexion = daoFactory.getConnection();
 
-			preparedStatement = connexion.prepareStatement(
-					"UPDATE contrat SET contrat.statut=?, contrat.pgmmodification=?, contrat.datemodification=?,"
-							+ " contrat.usermodification=? where contrat.id=? and contrat.version=?;");
-			preparedStatement.setString(1, "Annulé");
-			preparedStatement.setString(2, "ANNULATION");
-			preparedStatement.setString(3, dateTime);
-			preparedStatement.setString(4, System.getProperty("user.name"));
-			preparedStatement.setInt(5, contrat.getId());
-			preparedStatement.setInt(6, contrat.getVersion());
-			preparedStatement.executeUpdate();
-			connexion.commit();
-		} catch (SQLException e) {
-			try {
-				if (connexion != null) {
-					connexion.rollback();
-				}
-			} catch (SQLException e2) {
-			}
-			throw new DaoException("Impossible d'annuler enregistrement avec la table contratt" + e);
-		} finally {
-			try {
-				if (connexion != null) {
-					connexion.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException("Impossible d'annuler enregistrement avec la table contratt" + e);
-			}
-		}
-	}
-	// =================================================================================
-	// TERMINER CONTRATCLIENT
-	// =================================================================================
-	@Override
-	public void terminerContrat(Contrat contrat) throws DaoException {
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
+ 	 				preparedStatement = connexion.prepareStatement(
+ 	 						"UPDATE contrat SET contrat.statut=(SELECT id FROM statut WHERE nom = 'Annulé'), contrat.pgmmodification=?, contrat.datemodification=?,"
+ 	 								+ " contrat.usermodification=? where contrat.id=?;");
+ 	 				preparedStatement.setString(1, "ANNULER CONTRAT");
+ 	 				preparedStatement.setString(2, dateTime);
+ 	 				preparedStatement.setString(3, System.getProperty("user.name"));
+ 	 				preparedStatement.setInt(4, id_contrat);
+ 	 				preparedStatement.executeUpdate();
+ 	 				connexion.commit();
+ 	 			} catch (SQLException e) {
+ 	 				try {
+ 	 					if (connexion != null) {
+ 	 						connexion.rollback();
+ 	 					}
+ 	 				} catch (SQLException e2) {
+ 	 				}
+ 	 				throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
+ 	 			} finally {
+ 	 				try {
+ 	 					if (connexion != null) {
+ 	 						connexion.close();
+ 	 					}
+ 	 				} catch (SQLException e) {
+ 	 					throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
+ 	 				}
+ 	 			}
+ 	 		}
 
-		try {
-			connexion = daoFactory.getConnection();
 
-			preparedStatement = connexion.prepareStatement(
-					"UPDATE contrat SET contrat.statut=?, contrat.pgmmodification=?, contrat.datemodification=?,"
-							+ " contrat.usermodification=? where contrat.id=? and contrat.version=?;");
-			preparedStatement.setString(1, "Terminé");
-			preparedStatement.setString(2, "FIN CONTRAT");
-			preparedStatement.setString(3, dateTime);
-			preparedStatement.setString(4, System.getProperty("user.name"));
-			preparedStatement.setInt(5, contrat.getId());
-			preparedStatement.setInt(6, contrat.getVersion());
-			preparedStatement.executeUpdate();
-			connexion.commit();
-		} catch (SQLException e) {
-			try {
-				if (connexion != null) {
-					connexion.rollback();
-				}
-			} catch (SQLException e2) {
-			}
-			throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-		} finally {
-			try {
-				if (connexion != null) {
-					connexion.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-			}
-		}
-	}
+ 	 	// =================================================================================
+ 	 		// FAIRE AVENANT CONTRAT
+ 	 		// =================================================================================
+ 	 		@Override
+ 	 		public void faire_avenantContrat(Contrat contrat) throws DaoException {
+ 	 			copierContrat(contrat);
+ 	 			terminerContrat(contrat.getId());
+ 	 		}
 
-	// =================================================================================
-		// versionner CONTRATCLIENT
+ 	// =================================================================================
+  	// LISTER DES ORGANISATIONS
+  	// =================================================================================
+    @Override
+    public List<Contrat> listerContrat() throws DaoException {
+        List<Contrat> contrats = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT * FROM contrat;";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Contrat contrat = new Contrat();
+                contrat.setId(resultat.getInt("id"));
+                contrat.setNom(resultat.getString("nom"));
+                contrat.setTypeContrat(resultat.getInt("typeContrat"));
+                contrat.setStatut(resultat.getInt("statut"));
+                contrat.setOrganisation(resultat.getInt("personnel"));
+                contrat.setOrganisation(resultat.getInt("organisation"));
+                contrat.setDate_demarrage(resultat.getString("date_demarrage"));
+                contrat.setDate_fin(resultat.getString("date_fin"));
+                contrat.setCommentaire(resultat.getString("commentaire"));
+                contrat.setDocument(resultat.getString("document"));
+                contrats.add(contrat);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return contrats;
+    }
+
+    	// =================================================================================
+		// TROUVER CONTRAT PAR ID
 		// =================================================================================
-		@Override
-		public void versionnerContrat(Contrat contrat) throws DaoException {
-			Connection connexion = null;
-			PreparedStatement preparedStatement = null;
+    @Override
+    public Contrat trouverContrat(Integer id) throws DaoException {
+        Contrat contrat = null;
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultat = null;
+        int id_unique =0;
+        int version = 0;
+     // Retrouver id et version
+        id_unique = id / 10;        // Division entière pour obtenir l'id
+        version = id % 10;  // Modulo pour obtenir la version
+        try {
+        	connexion = daoFactory.getConnection();
+            String sql = "SELECT * FROM contrat WHERE id_unique=? and version=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setInt(1, id_unique);
+            preparedStatement.setInt(2, version);
+            resultat = preparedStatement.executeQuery();
+            if (resultat.next()) {
+                contrat = new Contrat();
+                contrat.setId(id);
+                contrat.setNom(resultat.getString("nom"));
+                contrat.setTypeContrat(resultat.getInt("typeContrat"));
+                contrat.setStatut(resultat.getInt("statut"));
+                contrat.setOrganisation(resultat.getInt("organisation"));
+                contrat.setDate_demarrage(resultat.getString("date_demarrage"));
+                contrat.setDate_fin(resultat.getString("date_fin"));
+                contrat.setCommentaire(resultat.getString("commentaire"));
+                contrat.setDocument(resultat.getString("document"));
+                contrat.setUsermodification(resultat.getString("usermodification"));
+                contrat.setDatemodification(resultat.getDate("datemodification"));
+                contrat.setPgmmodification(resultat.getString("pgmmodification"));
+                contrat.setUsercreation(resultat.getString("usercreation"));
+                contrat.setDatecreation(resultat.getDate("datecreation"));
+                contrat.setPgmcreation(resultat.getString("pgmcreation"));
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de trouver l'enregistrement avec la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, resultat);
+        }
+        return contrat;
+    }
 
-			try {
-				connexion = daoFactory.getConnection();
-
-				preparedStatement = connexion.prepareStatement(
-						"INSERT INTO contrat (id, version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminAbsolu, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur, contrat.id_client, contrat.type_entite, usermodification, datemodification, pgmmodification) " +
-				                   "SELECT ?, COALESCE(MAX(version), 0) + 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? " +
-				                   "FROM contrat WHERE id = ?");
-				preparedStatement.setInt(1, contrat.getId());
-				preparedStatement.setString(2, "En-cours");
-				preparedStatement.setString(3, "");
-				preparedStatement.setString(4, contrat.getCheminRelatif());
-				preparedStatement.setString(5, contrat.getCheminAbsolu());
-				preparedStatement.setString(6, contrat.getNom_contrat());
-				preparedStatement.setString(7, contrat.getType_contrat());
-				preparedStatement.setInt(8, contrat.getId_referent_collaborateur());
-				preparedStatement.setInt(9, contrat.getId_client());
-				preparedStatement.setString(10, contrat.getType_entite());
-				preparedStatement.setString(11, System.getProperty("user.name"));
-				preparedStatement.setString(12, dateTime);
-				preparedStatement.setString(13, "VERSION");
-				preparedStatement.setInt(14, contrat.getId());
-				preparedStatement.executeUpdate();
-				connexion.commit();
-			} catch (SQLException e) {
-				try {
-					if (connexion != null) {
-						connexion.rollback();
-					}
-				} catch (SQLException e2) {
-				}
-				throw new DaoException("Impossible de versionner enregistrement avec la table contratt" + e);
-			} finally {
-				try {
-					if (connexion != null) {
-						connexion.close();
-					}
-				} catch (SQLException e) {
-					throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-				}
-			}
-			terminerContrat(contrat);
-		}
-
+    	// =================================================================================
+		// TROUVER CONTRAT PAR NOM
 		// =================================================================================
-		// RENOMMER CONTRATCLIENT
+    @Override
+    public boolean trouverNomContrat(String nom) throws DaoException {
+        boolean existe = false;
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            String sql = "SELECT * FROM contrat WHERE nom=?;";
+            preparedStatement = connexion.prepareStatement(sql);
+            preparedStatement.setString(1, nom);
+            resultat = preparedStatement.executeQuery();
+            if (resultat.next()) {
+                existe = true;
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de vérifier l'existence du nom dans la table Contrat"+ e);
+        } finally {
+            closeResources(connexion, preparedStatement, resultat);
+        }
+        return existe;
+    }
+
+
+
+    	// =================================================================================
+		// RECHERCHE CONTRAT
 		// =================================================================================
-		@Override
-		public void renommerContrat(Contrat contrat) throws DaoException {
-			Connection connexion = null;
-			PreparedStatement preparedStatement = null;
+    @Override
+    public List<Map<String, Object>> rechercheContrats(Integer offset, Integer noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite) {
+    	List<Map<String, Object>> list = new ArrayList<>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        String ww_where ="";
+        String ww_statut="";
+        if  (tag_statut.equals("Tout")) {
+        	ww_statut="";
+        } else {
+        	ww_statut=tag_statut;
+        }
+        int id_statut = 0;
+        if  (!ww_statut.equals("")) {
+        	try {
+            	connexion = daoFactory.getConnection();
+                String sql = "SELECT * FROM statut WHERE nom=?;";
+                preparedStatement = connexion.prepareStatement(sql);
+                preparedStatement.setString(1, ww_statut);
+                rs = preparedStatement.executeQuery();
+                if (rs.next()) {
+                    id_statut= rs.getInt("id");
+                }
+            } catch (SQLException e) {
+            } finally {
+                }
+        	if  (id_statut!=0) {
+        		ww_where =" where statut.id="+id_statut;
+        }
+        }
+        if  (!type_entite.equals("")) {
+        	if (!ww_where.equals("")) {
+        		ww_where = ww_where + " and entite.nom='"+type_entite+"'";
+        	}
+        	else {
+        	ww_where = " where entite.nom='"+type_entite+"'";
+        	}
+        }
+        try {
+        	connexion = daoFactory.getConnection();
+            String query = "SELECT SQL_CALC_FOUND_ROWS contrat.id_unique, contrat.version, contrat.id, contrat.nom, document, typeContrat, statut, Organisation, date_demarrage, date_fin, commentaire, typeContrat.nom, statut.nom, organisation.raison_sociale, personnel.nom, personnel.prenom FROM contrat "
+            		+ " left join typeContrat on contrat.typeContrat = typeContrat.id left join statut on contrat.statut=statut.id left join organisation on contrat.organisation=organisation.id left join entite on typecontrat.entite=entite.id left join personnel on contrat.personnel=personnel.id "
+            		+ ww_where
+            		+ " ORDER BY " + select_tri + " LIMIT ?, ?";
+            preparedStatement = connexion.prepareStatement(query);
+            preparedStatement.setInt(1, offset);
+            preparedStatement.setInt(2, noOfRecords);
+            rs = preparedStatement.executeQuery();
 
-			try {
-				connexion = daoFactory.getConnection();
+            while (rs.next()) {
 
-				preparedStatement = connexion.prepareStatement(
-						"UPDATE contrat SET contrat.nom_contrat=?, contrat.pgmmodification=?, contrat.datemodification=?,"
-								+ " contrat.usermodification=? where contrat.id=? and contrat.version=?;");
-				preparedStatement.setString(1, contrat.getNom_contrat());
-				preparedStatement.setString(2, "FIN CONTRAT");
-				preparedStatement.setString(3, dateTime);
-				preparedStatement.setString(4, System.getProperty("user.name"));
-				preparedStatement.setInt(5, contrat.getId());
-				preparedStatement.setInt(6, contrat.getVersion());
-				preparedStatement.executeUpdate();
-				connexion.commit();
-			} catch (SQLException e) {
-				try {
-					if (connexion != null) {
-						connexion.rollback();
-					}
-				} catch (SQLException e2) {
-				}
-				throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-			} finally {
-				try {
-					if (connexion != null) {
-						connexion.close();
-					}
-				} catch (SQLException e) {
-					throw new DaoException("Impossible de supprimer enregistrement avec la table contratt" + e);
-				}
-			}
-		}
+                Map<String, Object> contratFields = new LinkedHashMap<>();
+                if (dictionnaire_nom_colonne.containsKey("id")) {
+                contratFields.put("id", rs.getInt("id"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("id_unique")) {
+                    contratFields.put("id_unique", rs.getInt("id_unique"));
+                    }
+                if (dictionnaire_nom_colonne.containsKey("version")) {
+                contratFields.put("version", rs.getInt("version"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("nom")) {
+                contratFields.put("nom", rs.getString("nom"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("typeContrat")) {
+                contratFields.put("typeContrat", rs.getString("typeContrat.nom"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("statut")) {
+                contratFields.put("statut", rs.getString("statut.nom"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("organisation")) {
+                contratFields.put("organisation", rs.getString("organisation.raison_sociale"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("personnel")) {
+                    contratFields.put("personnel", rs.getString("personnel.prenom")+" "+rs.getString("personnel.nom"));
+                    }
+                if (dictionnaire_nom_colonne.containsKey("date_demarrage")) {
+                contratFields.put("date_demarrage", rs.getString("date_demarrage"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("date_fin")) {
+                contratFields.put("date_fin", rs.getString("date_fin"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("commentaire")) {
+                contratFields.put("commentaire", rs.getString("commentaire"));
+                }
+                if (dictionnaire_nom_colonne.containsKey("document")) {
+                    contratFields.put("document", rs.getString("document"));
+                    System.out.println("yes put"+rs.getString("document"));
+                    }
+                list.add(contratFields);
+            }
 
-	// ================================================================================
-	// ====LISTER LES ENREGISTREMENTS
-	// ================================================================================
-	@Override
-	public List<Contrat> listerContrat() throws DaoException {
-		List<Contrat> contrats = new ArrayList<Contrat>();
-		Connection connexion = null;
-		Statement statement = null;
-		ResultSet resultat = null;
+            rs.close();
 
-		try {
-			connexion = daoFactory.getConnection();
-			statement = connexion.createStatement();
-			resultat = statement.executeQuery("SELECT * FROM contrat;");
+            preparedStatement = connexion.prepareStatement("SELECT FOUND_ROWS()");
+            rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                this.noOfRecords = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connexion, preparedStatement, rs);
+        }
+        return list;
+    }
 
-			while (resultat.next()) {
-				int id = resultat.getInt("id");
-				int version = resultat.getInt("version");
-				String type_contrat = resultat.getString("type_contrat");
-				String documentClient = resultat.getString("documentClient");
+    	// =================================================================================
+		// RECHERCHE STATUTS SUIVANT LIKE
+		// =================================================================================
+    @Override
+    public List<Map<String, Object>>  rechercheLikeContrats(Integer offset, Integer noOfRecords, String select_tri, String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite) {
+    	List<Map<String, Object>> list = new ArrayList<>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        String ww_where ="";
+        String ww_statut="";
+        if  (tag_statut.equals("Tout")) {
+        	ww_statut="";
+        } else {
+        	ww_statut=tag_statut;
+        }
+        int id_statut = 0;
+        if  (!ww_statut.equals("")) {
+        	try {
+            	connexion = daoFactory.getConnection();
+                String sql = "SELECT * FROM statut WHERE nom=?;";
+                preparedStatement = connexion.prepareStatement(sql);
+                preparedStatement.setString(1, ww_statut);
+                rs = preparedStatement.executeQuery();
+                if (rs.next()) {
+                    id_statut= rs.getInt("id");
+                }
+            } catch (SQLException e) {
+            } finally {
+                }
+        	if  (id_statut!=0) {
+        		ww_where =" where statut.id="+id_statut;
+        }
+        }
+        if  (!type_entite.equals("")) {
+        	if (!ww_where.equals("")) {
+        		ww_where = ww_where + " and entite.nom='"+type_entite+"'";
+        	}
+        	else {
+        	ww_where = " where entite.nom='"+type_entite+"'";
+        	}
+        }
 
-				Contrat contrat = new Contrat();
-				contrat.setId(id);
-				contrat.setVersion(version);
-				contrat.setType_contrat(type_contrat);
-				contrat.setDocument(documentClient);
+        try {
+            connexion = daoFactory.getConnection();
+            String query = "SELECT SQL_CALC_FOUND_ROWS contrat.id_unique, contrat.version, contrat.id, contrat.nom, document, typeContrat, statut, Organisation, date_demarrage, date_fin, commentaire, typeContrat.nom, statut.nom, organisation.raison_sociale, personnel.nom, personnel.prenom FROM contrat "
+            		+ " left join typeContrat on contrat.typeContrat = typeContrat.id left join statut on contrat.statut=statut.id left join organisation on contrat.organisation=organisation.id left join entite on typecontrat.entite=entite.id left join personnel on contrat.personnel=personnel.id "
+            		+ ww_where + " and "
+            		+ select_like + " ORDER BY " + select_tri + " LIMIT ?, ?";
+            preparedStatement = connexion.prepareStatement(query);
+            preparedStatement.setInt(1, offset);
+            preparedStatement.setInt(2, noOfRecords);
+            rs = preparedStatement.executeQuery();
 
-				contrats.add(contrat);
-			}
-		} catch (SQLException e) {
-			throw new DaoException("Impossible de lister enregistrement avec la table contratt" + e);
-		} finally {
-			try {
-				if (connexion != null) {
-					connexion.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException("Impossible de lister enregistrement avec la table contratt" + e);
-			}
-		}
-		return contrats;
-	}
+            while (rs.next()) {
+            	Map<String, Object> contratFields = new LinkedHashMap<>();
+            	 if (dictionnaire_nom_colonne.containsKey("id")) {
+                     contratFields.put("id", rs.getInt("id"));
+                     }
+            	 	if (dictionnaire_nom_colonne.containsKey("id_unique")) {
+                     contratFields.put("id_unique", rs.getInt("id_unique"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("version")) {
+                     contratFields.put("version", rs.getInt("version"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("nom")) {
+                     contratFields.put("nom", rs.getString("nom"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("typeContrat")) {
+                     contratFields.put("typeContrat", rs.getString("typeContrat"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("statut")) {
+                     contratFields.put("statut", rs.getInt("statut"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("organisation")) {
+                     contratFields.put("organisation", rs.getString("organisation"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("personnel")) {
+                         contratFields.put("personnel", rs.getString("personnel.prenom")+" "+rs.getString("personnel.nom"));
+                         }
+                     if (dictionnaire_nom_colonne.containsKey("date_demarrage")) {
+                     contratFields.put("date_demarrage", rs.getString("date_demarrage"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("date_fin")) {
+                     contratFields.put("date_fin", rs.getString("date_fin"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("commentaire")) {
+                     contratFields.put("commentaire", rs.getString("commentaire"));
+                     }
+                     if (dictionnaire_nom_colonne.containsKey("document")) {
+                         contratFields.put("document", rs.getString("document"));
+                         }
+                list.add(contratFields);
+            }
 
+            rs.close();
 
-
-	// ====CRUD LIRE UN ENREGISTREMENT SPECIFIQUE VIA SON ID_CONTRAT ET
-	// ID_AVENANT====================================
-	@Override
-	public Contrat trouverIdVersion(int id, int version, String type_entite) throws DaoException {
-		Contrat contrat = new Contrat();
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet resultat = null;
-
-		try {
-			/* Récupération d'une connexion depuis la Factory */
-			connexion = daoFactory.getConnection();
-			preparedStatement = connexion.prepareStatement(
-					"SELECT contrat.type_contrat, contrat.document, contrat.id_referent_collaborateur, contrat.id_client,"
-							+ " contrat.date_demarrage,  contrat.nom_contrat, contrat.statut, contrat.commentaire, "
-							+ "societe.raison_sociale, collaborateur.prenom, collaborateur.nom, contrat.cheminrelatif, contrat.cheminAbsolu, contrat.type_entite from contrat "
-							+ "LEFT JOIN collaborateur on contrat.id_referent_collaborateur= collaborateur.id "
-							+ "LEFT JOIN societe on contrat.id_client=societe.id where societe.type='" + type_entite + "' "
-							+ "and contrat.id=? and contrat.version=? ");
-
-			preparedStatement.setInt(1, id);
-			preparedStatement.setInt(2, version);
-			resultat = preparedStatement.executeQuery();
-			connexion.commit();
-			/* Parcours de la ligne de données de l'éventuel ResulSet retourné */
-			if (resultat.next()) {
-				contrat.setId(id);
-				contrat.setVersion(version);
-				contrat.setType_contrat(resultat.getString("contrat.type_contrat"));
-				contrat.setDocument(resultat.getString("contrat.document"));
-				contrat.setId_referent_collaborateur(resultat.getInt("contrat.id_referent_collaborateur"));
-				contrat.setId_client(resultat.getInt("contrat.id_client"));
-				contrat.setClient(resultat.getString("societe.raison_sociale"));
-				contrat.setCollaborateur(resultat.getString("collaborateur.prenom")  + resultat.getString("collaborateur.nom") );
-				contrat.setDate_demarrage(resultat.getString("contrat.date_demarrage"));
-				contrat.setNom_contrat(resultat.getString("contrat.nom_contrat"));
-				contrat.setStatut(resultat.getString("contrat.statut"));
-				contrat.setCommentaire(resultat.getString("contrat.commentaire"));
-				contrat.setCheminRelatif(resultat.getString("contrat.cheminRelatif"));
-				contrat.setCheminAbsolu(resultat.getString("contrat.cheminAbsolu"));
-				contrat.setType_entite(resultat.getString("contrat.type_entite"));
-			}
-		} catch (SQLException e) {
-			throw new DaoException("Impossible de trouver id enregistrement avec la table contratt" + e);
-		} finally {
-			try {
-				if (connexion != null) {
-					connexion.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(
-						"Impossible de trouver id enregistrement avec la table contratt" + e);
-			}
-		}
-		return contrat;
-	}
+            preparedStatement = connexion.prepareStatement("SELECT FOUND_ROWS()");
+            rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                this.noOfRecords = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connexion, preparedStatement, rs);
+        }
+        return list;
+    }
 
 
-	// ==================================================================
-	// ====rechercher et lister les enregistrements
-	// ==================================================================
-	@Override
-	public List<Contrat> rechercheContrats1(int offset, int noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne,String tag_statut, String type_entite) {
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet rs = null;
-
-		String tag_where_statut = "";
-		if (! tag_statut.equals("Tout"))
-		tag_where_statut = "and contrat.statut='"
-				+ tag_statut + "' " ;
-
-		String query2 = "select SQL_CALC_FOUND_ROWS contrat.id, contrat.version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminRelatif, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur,  contrat.id_client, contrat.date_demarrage, contrat.commentaire, societe.raison_sociale, contrat.type_entite from contrat  "
-				+ "LEFT JOIN societe on contrat.id_client=societe.id where societe.type='" +type_entite+"' "+ "and contrat.type_entite='"+type_entite+"' "
-				+ tag_where_statut + " ORDER BY " + select_tri + " limit " + offset + ", " + noOfRecords;
-		List<Contrat> list = new ArrayList<Contrat>();
-		Contrat contrat = null;
-		try {
-			connexion = daoFactory.getConnection();
-			preparedStatement = connexion.prepareStatement(query2);
-			rs = preparedStatement.executeQuery();
-
-			while (rs.next()) {
-				contrat = new Contrat();
-				contrat.setId(rs.getInt(1));
-				contrat.setVersion(rs.getInt(2));
-				contrat.setStatut(rs.getString(3));
-				contrat.setDocument(rs.getString(5) + rs.getString(4));
-				contrat.setNom_contrat(rs.getString(7));
-				contrat.setType_contrat(rs.getString(8));
-				contrat.setId_referent_collaborateur(rs.getInt(9));
-				contrat.setId_client(rs.getInt(10));
-				contrat.setDate_demarrage(rs.getString(11));
-				contrat.setCommentaire(rs.getString(12));
-				contrat.setClient(rs.getString(13));
-				contrat.setType_entite(rs.getString(14));
-				list.add(contrat);
-			}
-
-			// rs.close();
-			rs = preparedStatement.executeQuery("SELECT FOUND_ROWS()");
-
-			if (rs.next())
-				this.noOfRecords = rs.getInt(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (connexion != null)
-					connexion.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return list;
-	}
-
-	// ==================================================================
-		// ====rechercher et lister les enregistrements
-		// ==================================================================
-		@Override
-		public List<Map<String, Object>> rechercheContrats(Integer offset, Integer noOfRecords, String select_tri, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_entite) {
-			List<Map<String, Object>> list = new ArrayList<>();
-			Connection connexion = null;
-			PreparedStatement preparedStatement = null;
-			ResultSet rs = null;
-
-			String tag_where_statut = "";
-			if (! tag_statut.equals("Tout"))
-			tag_where_statut = "and contrat.statut='"
-					+ tag_statut + "' " ;
-
-			String query2 = "select SQL_CALC_FOUND_ROWS contrat.id, contrat.version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminRelatif, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur,  contrat.id_client, contrat.date_demarrage, contrat.commentaire, societe.raison_sociale, contrat.type_entite from contrat  "
-					+ "LEFT JOIN societe on contrat.id_client=societe.id where societe.type='" +type_entite+"' "+ "and contrat.type_entite='"+type_entite+"' "
-					+ tag_where_statut + " ORDER BY " + select_tri + " limit " + offset + ", " + noOfRecords;
-
-			try {
-				connexion = daoFactory.getConnection();
-				preparedStatement = connexion.prepareStatement(query2);
-				rs = preparedStatement.executeQuery();
-
-				while (rs.next()) {
-					 Map<String, Object> contratFields = new LinkedHashMap<>();
-		                contratFields.put("id", rs.getInt("id"));
-		                contratFields.put("version", rs.getString("version"));
-		                contratFields.put("statut", rs.getString("statut"));
-		                contratFields.put("document", rs.getInt("document"));
-		                contratFields.put("nom_contrat", rs.getString("nom_contrat"));
-		                contratFields.put("type_contrat", rs.getString("type_contrat"));
-		                contratFields.put("id_referent", rs.getInt("id_referent"));
-		                contratFields.put("id_client", rs.getString("id_client"));
-		                contratFields.put("date_demarrage", rs.getString("date_demarrage"));
-		                contratFields.put("commentaire", rs.getInt("commentaire"));
-		                contratFields.put("client", rs.getString("client"));
-		                contratFields.put("type_entite", rs.getString("type_entite"));
-		                list.add( contratFields);
-				}
-
-				// rs.close();
-				rs = preparedStatement.executeQuery("SELECT FOUND_ROWS()");
-
-				if (rs.next())
-					this.noOfRecords = rs.getInt(1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (connexion != null)
-						connexion.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			return list;
-		}
-
+    // =================================================================================
+	// RECUPERATION N° ENREGISTREMENT ENCOURS CONTRAT
 	// =================================================================================
-		// RECUPERATION N° ENREGISTREMENT ENCOURS ENTETE PARAMETRE
-		// =================================================================================
-	    @Override
-	    public int getNoOfRecords() {
-	        return noOfRecords;
-	    }
+    @Override
+    public int getNoOfRecords() {
+        return noOfRecords;
+    }
 
-	    @Override
-	    public String getStringRecords() {
-	    	String StringRecords = Integer.toString(noOfRecords);
-	        return StringRecords;
-	    }
-
-	    @Override
-	    public Integer getIntegerRecords() {
-	    	Integer integerRecords = noOfRecords;
-	        return integerRecords;
-	    }
+    @Override
+    public Integer getIntegerRecords() {
+    	Integer integerRecords = noOfRecords;
+        return integerRecords;
+    }
 
 
-
-	// ======================================================================
-	// ====rechercher et lister les enregistrements suivant like
-	// ======================================================================
-	    @Override
-	    public List<Contrat> rechercheLikeContrats1(int offset, int noOfRecords, String select_tri,
-			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne,  String tag_statut, String type_entite) {
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet rs = null;
-		String tag_where_statut = "";
-		if (! tag_statut.equals("Tout"))
-		tag_where_statut = "and contrat.statut='"
-				+ tag_statut + "' " ;
-
-		String query2 = "select SQL_CALC_FOUND_ROWS contrat.id, contrat.version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminRelatif, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur,  contrat.id_client, contrat.date_demarrage, contrat.commentaire, societe.raison_sociale, contrat.type_entite  from contrat  "
-				+ "LEFT JOIN societe on contrat.id_client=societe.id where societe.type='" +type_entite+"' "+ "and contrat.type_entite='"+type_entite+"' "
-				+ tag_where_statut + " and " + select_like + " ORDER BY " + select_tri + " limit " + offset + ", "
-				+ noOfRecords;
-		List<Contrat> list = new ArrayList<Contrat>();
-		Contrat contrat = null;
-		try {
-			connexion = daoFactory.getConnection();
-			preparedStatement = connexion.prepareStatement(query2);
-			rs = preparedStatement.executeQuery();
-			while (rs.next()) {
-				contrat = new Contrat();
-				contrat.setId(rs.getInt(1));
-				contrat.setVersion(rs.getInt(2));
-				contrat.setStatut(rs.getString(3));
-				contrat.setDocument(rs.getString(5) + rs.getString(4));
-				contrat.setNom_contrat(rs.getString(7));
-				contrat.setType_contrat(rs.getString(8));
-				contrat.setId_referent_collaborateur(rs.getInt(9));
-				contrat.setId_client(rs.getInt(10));
-				contrat.setDate_demarrage(rs.getString(11));
-				contrat.setCommentaire(rs.getString(12));
-				contrat.setClient(rs.getString(13));
-				contrat.setType_entite(rs.getString(14));
-				list.add(contrat);
-			}
-
-			rs.close();
-			rs = preparedStatement.executeQuery("SELECT FOUND_ROWS()");
-
-			if (rs.next())
-				this.noOfRecords = rs.getInt(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (connexion != null)
-					connexion.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return list;
-	}
-
-	    @Override
-	    public List<Map<String, Object>> rechercheLikeContrats(int offset, int noOfRecords, String select_tri,
-			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne,  String tag_statut, String type_entite) {
-	    	List<Map<String, Object>> list = new ArrayList<>();
-			Connection connexion = null;
-			PreparedStatement preparedStatement = null;
-			ResultSet rs = null;
-
-			String tag_where_statut = "";
-			if (! tag_statut.equals("Tout"))
-			tag_where_statut = "and contrat.statut='"
-					+ tag_statut + "' " ;
-
-			String query2 = "select SQL_CALC_FOUND_ROWS contrat.id, contrat.version, contrat.statut, contrat.document, contrat.cheminRelatif, contrat.cheminRelatif, contrat.nom_contrat, contrat.type_contrat, contrat.id_referent_collaborateur,  contrat.id_client, contrat.date_demarrage, contrat.commentaire, societe.raison_sociale, contrat.type_entite from contrat  "
-					+ "LEFT JOIN societe on contrat.id_client=societe.id where societe.type='" +type_entite+"' "+ "and contrat.type_entite='"+type_entite+"' "
-					+ tag_where_statut + " ORDER BY " + select_tri + " limit " + offset + ", " + noOfRecords;
-
-			try {
-				connexion = daoFactory.getConnection();
-				preparedStatement = connexion.prepareStatement(query2);
-				rs = preparedStatement.executeQuery();
-
-				while (rs.next()) {
-					 Map<String, Object> contratFields = new LinkedHashMap<>();
-		                contratFields.put("id", rs.getInt("id"));
-		                contratFields.put("version", rs.getString("version"));
-		                contratFields.put("statut", rs.getString("statut"));
-		                contratFields.put("document", rs.getInt("document"));
-		                contratFields.put("nom_contrat", rs.getString("nom_contrat"));
-		                contratFields.put("type_contrat", rs.getString("type_contrat"));
-		                contratFields.put("id_referent", rs.getInt("id_referent"));
-		                contratFields.put("id_client", rs.getString("id_client"));
-		                contratFields.put("date_demarrage", rs.getString("date_demarrage"));
-		                contratFields.put("commentaire", rs.getInt("commentaire"));
-		                contratFields.put("client", rs.getString("client"));
-		                contratFields.put("type_entite", rs.getString("type_entite"));
-		                list.add( contratFields);
-				}
-
-				// rs.close();
-				rs = preparedStatement.executeQuery("SELECT FOUND_ROWS()");
-
-				if (rs.next())
-					this.noOfRecords = rs.getInt(1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (connexion != null)
-						connexion.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			return list;
-	}
-
-
-	// =============================================================
-	// TROUVER NOM CLIENT
-	// =============================================================
-	@Override
-	public boolean trouverNomContrat(String nom) throws DaoException {
-		boolean existe = false;
-		Connection connexion = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet resultat = null;
-
-		try {
-			connexion = daoFactory.getConnection();
-			String sql = "SELECT * FROM contrat WHERE nom_contrat=?;";
-			preparedStatement = connexion.prepareStatement(sql);
-			preparedStatement.setString(1, nom);
-			resultat = preparedStatement.executeQuery();
-			if (resultat.next()) {
-				existe = true;
-			}
-		} catch (SQLException e) {
-			throw new DaoException("Impossible de vérifier l'existence du nom dans la table Contrat"+ e);
-		} finally {
-			closeResources(connexion, preparedStatement, resultat);
-		}
-		return existe;
-	}
-
-	// =============================================================
-		// TROUVER FACTURE
-		// =============================================================
-		@Override
-		public boolean trouverFacture(int id) throws DaoException {
-			boolean existe = false;
-			Connection connexion = null;
-			PreparedStatement preparedStatement = null;
-			ResultSet resultat = null;
-
-			try {
-				connexion = daoFactory.getConnection();
-				String sql = "select * from facture_vente_service left join mission on facture_vente_service.id_mission=mission.id where mission.mission_id_client=?";
-				preparedStatement = connexion.prepareStatement(sql);
-				preparedStatement.setInt(1, id);
-				resultat = preparedStatement.executeQuery();
-				if (resultat.next()) {
-					existe = true;
-				}
-			} catch (SQLException e) {
-				throw new DaoException("Impossible de vérifier l'existence de factures"+ e);
-			} finally {
-				closeResources(connexion, preparedStatement, resultat);
-			}
-			return existe;
-		}
-
-
-	// =============================================================
-	// RAFRAICHIR REPERTOIRE
-	// =============================================================
-	private void refreshDirectory(File directory) {
-		// Récupérer la liste des fichiers dans le répertoire
-		File[] files = directory.listFiles();
-		if (files != null) {
-			for (File file : files) {
-			}
-		}
-	}
-
-	// =============================================================
-	// FERMER RESSOURCES
-	// =============================================================
-	private void closeResources(Connection connexion, Statement statement, ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				System.err.println("Error closing result set: " + e.getMessage());
-			}
-		}
-		if (statement != null) {
-			try {
-				statement.close();
-			} catch (SQLException e) {
-				System.err.println("Error closing statement: " + e.getMessage());
-			}
-		}
-		if (connexion != null) {
-			try {
-				connexion.close();
-			} catch (SQLException e) {
-				System.err.println("Error closing connection: " + e.getMessage());
-			}
-		}
-	}
-
+    // =================================================================================
+	// FERMETURE DES RESSOURCES CONTRAT
+	// =================================================================================
+    private void closeResources(Connection connexion, Statement statement, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing result set: " + e.getMessage());
+            }
+        }
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing statement: " + e.getMessage());
+            }
+        }
+        if (connexion != null) {
+            try {
+                connexion.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing connection: " + e.getMessage());
+            }
+        }
+    }
 }

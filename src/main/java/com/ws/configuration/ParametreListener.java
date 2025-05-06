@@ -16,10 +16,12 @@ import jakarta.servlet.annotation.WebListener;
 @WebListener
 public class ParametreListener implements ServletContextListener {
 	private Map<String, Map<String, String>> contracts = new HashMap<>();
+	private Map<String, Map<String, String>> cheminsContrats = new HashMap<>();
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
+    	  String id_typecontrat=null;
     	  String contrat = null;
 		  String cheminRelatif;
 		  String cheminAbsolu;
@@ -37,13 +39,33 @@ public class ParametreListener implements ServletContextListener {
 			  contractDetails.put("cheminRelatif", cheminRelatif); contractDetails.put("cheminAbsolu", cheminAbsolu);
 		  // Ajouter la Map à la Map des contrats
 			  contracts.put(contrat, contractDetails);
-			  System.out.println("servlet ecoute:" + contrat);
 			  }
 
 		  } catch (Exception e) { e.printStackTrace(); }
 
 		  // Stocker les paramètres dans le ServletContext
 		  sce.getServletContext().setAttribute("contracts", contracts);
+
+		  try (Connection connection = DatasourceH.getConnection();
+				  Statement statement = connection.createStatement();
+				  ResultSet resultSet = statement.executeQuery("SELECT id, cheminAbsolu, cheminRelatif FROM typecontrat"
+		  )) { while (resultSet.next()) {
+
+		  // Récupérer les paramètres du formulaire
+			  Map<String, String> cheminsContrat = new HashMap<>();
+			   id_typecontrat = resultSet.getString("id");
+			   cheminRelatif = resultSet.getString("cheminRelatif");
+			   cheminAbsolu = resultSet.getString("cheminAbsolu");
+			   cheminsContrat.put("cheminRelatif", cheminRelatif);
+			   cheminsContrat.put("cheminAbsolu", cheminAbsolu);
+		  // Ajouter la Map à la Map des contrats
+			  cheminsContrats.put(id_typecontrat, cheminsContrat);
+			  }
+
+		  } catch (Exception e) { e.printStackTrace(); }
+
+		  // Stocker les paramètres dans le ServletContext
+		  sce.getServletContext().setAttribute("cheminsContrats", cheminsContrats);
 
     }
 

@@ -49,4 +49,6 @@ public interface TypeContratDao {
 
 	List<TypeContrat> listerTypeContratSalarie() throws DaoException;
 
+	List<TypeContrat> listerTypeContratInterne() throws DaoException;
+
 }

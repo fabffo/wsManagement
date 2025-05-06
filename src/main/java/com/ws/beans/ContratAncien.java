@@ -9,10 +9,11 @@ package com.ws.beans;
 
 import java.util.Date;
 
-public class ContratClient {
+public class ContratAncien {
 
-	private int id_contrat;
-	private int id_avenant;
+	private int id;
+	private int version;
+	private String type_entite;
 	private String statut;
 	private String document;
 	private String cheminAbsolu;
@@ -31,17 +32,17 @@ public class ContratClient {
     private String usercreation;
     private Date datecreation;
     private String pgmcreation;
-	public int getId_contrat() {
-		return id_contrat;
+	public int getId() {
+		return id;
 	}
-	public void setId_contrat(int id_contrat) {
-		this.id_contrat = id_contrat;
+	public void setId(int id) {
+		this.id = id;
 	}
-	public int getId_avenant() {
-		return id_avenant;
+	public int getVersion() {
+		return version;
 	}
-	public void setId_avenant(int id_avenant) {
-		this.id_avenant = id_avenant;
+	public void setVersion(int version) {
+		this.version = version;
 	}
 	public String getStatut() {
 		return statut;
@@ -151,9 +152,16 @@ public class ContratClient {
 	public void setPgmcreation(String pgmcreation) {
 		this.pgmcreation = pgmcreation;
 	}
+
+	public String getType_entite() {
+		return type_entite;
+	}
+	public void setType_entite(String type_entite) {
+		this.type_entite = type_entite;
+	}
 	@Override
 	public String toString() {
-		return "ContratClient [id_contrat=" + id_contrat + ", id_avenant=" + id_avenant + ", statut=" + statut
+		return "Contrat [id=" + id + ", version=" + version + ", type_entite=" + type_entite + ", statut=" + statut
 				+ ", document=" + document + ", cheminAbsolu=" + cheminAbsolu + ", cheminRelatif=" + cheminRelatif
 				+ ", nom_contrat=" + nom_contrat + ", type_contrat=" + type_contrat + ", id_referent_collaborateur="
 				+ id_referent_collaborateur + ", collaborateur=" + collaborateur + ", id_client=" + id_client
@@ -162,5 +170,6 @@ public class ContratClient {
 				+ ", pgmmodification=" + pgmmodification + ", usercreation=" + usercreation + ", datecreation="
 				+ datecreation + ", pgmcreation=" + pgmcreation + "]";
 	}
+
 
 }

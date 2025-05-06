@@ -13,8 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
-import com.ws.beans.Organisation;
+import com.ws.beans.Client;
 import com.ws.configuration.DatasourceH;
 
 public class ClientDaoImpl implements ClientDao {
@@ -25,14 +24,12 @@ public class ClientDaoImpl implements ClientDao {
 
 	  ClientDaoImpl(DaoFactory daoFactory) { this.daoFactory = daoFactory; }
 
-
-
  	// =================================================================================
-  	// LISTER DES ORGANISATIONS
+  	// LISTER DES CLIENTS
   	// =================================================================================
     @Override
-    public List<Organisation> listerClient() throws DaoException {
-        List<Organisation> organisations = new ArrayList<>();
+    public List<Client> listerClient() throws DaoException {
+        List<Client> clients = new ArrayList<>();
         Connection connexion = null;
         Statement statement = null;
         ResultSet resultat = null;
@@ -40,38 +37,79 @@ public class ClientDaoImpl implements ClientDao {
         try {
         	connexion = daoFactory.getConnection();
             statement = connexion.createStatement();
-            String sql = "SELECT organisation.id, organisation.entite, organisation.raison_sociale, adresse, code_postal, ville, pays, siren, siret, code_naf, organisation.tva, organisation.metier, organisation.telephone, organisation.email, organisation.relation FROM organisation "
-            		+ " left join typecontrat on typecontrat.id=organisation.entite left join entite on organisation.entite=entite.id and entite.nom='CLIENT';";
+            String sql = "SELECT organisation.id, entite, raison_sociale, adresse, code_postal, ville, pays, siren, siret, code_naf, tva, metier, telephone, email, relation FROM organisation"
+            		+ " left join entite on organisation.entite=entite.id where entite.nom='Client'"
+            		+ ";";
             resultat = statement.executeQuery(sql);
             while (resultat.next()) {
-                Organisation organisation = new Organisation();
-                organisation.setId(resultat.getInt("id"));
-                organisation.setEntite(resultat.getInt("entite"));
-                organisation.setRaison_sociale(resultat.getString("raison_sociale"));
-                organisation.setNom(resultat.getString("raison_sociale"));
-				organisation.setAdresse(resultat.getString("adresse"));
-				organisation.setCode_postal(resultat.getString("code_postal"));
-				organisation.setVille(resultat.getString("ville"));
-				organisation.setPays(resultat.getString("pays"));
-				organisation.setSiren(resultat.getString("siren"));
-				organisation.setSiret(resultat.getString("siret"));
-				organisation.setCode_naf(resultat.getString("code_naf"));
-				organisation.setTva(resultat.getInt("tva"));
-				organisation.setMetier(resultat.getInt("metier"));
-				organisation.setTelephone(resultat.getString("telephone"));
-				organisation.setEmail(resultat.getString("email"));
-				organisation.setRelation(resultat.getInt("relation"));
-                organisations.add(organisation);
+                Client client = new Client();
+                client.setId(resultat.getInt("id"));
+                client.setEntite(resultat.getInt("entite"));
+                client.setRaison_sociale(resultat.getString("raison_sociale"));
+                client.setNom(resultat.getString("raison_sociale"));
+				client.setAdresse(resultat.getString("adresse"));
+				client.setCode_postal(resultat.getString("code_postal"));
+				client.setVille(resultat.getString("ville"));
+				client.setPays(resultat.getString("pays"));
+				client.setSiren(resultat.getString("siren"));
+				client.setSiret(resultat.getString("siret"));
+				client.setCode_naf(resultat.getString("code_naf"));
+				client.setTva(resultat.getInt("tva"));
+				client.setMetier(resultat.getInt("metier"));
+				client.setTelephone(resultat.getString("telephone"));
+				client.setEmail(resultat.getString("email"));
+				client.setRelation(resultat.getInt("relation"));
+                clients.add(client);
             }
         } catch (SQLException e) {
-            throw new DaoException("Impossible de lister les enregistrements avec la table Organisation"+ e);
+            throw new DaoException("Impossible de lister les enregistrements avec la table Client"+ e);
         } finally {
             closeResources(connexion, statement, resultat);
         }
-        return organisations;
+        return clients;
     }
+
+    @Override
+    public Client trouverClientParId(int id) {
+        Client client = null;
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement ps = connexion.prepareStatement("SELECT * FROM organisation left join entite on organisation.entite=entite.id where entite.nom='Client' and organisation.id = ?")) {
+            ps.setInt(1, id);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                client = new Client();
+                client.setId(rs.getInt("id"));
+                client.setRaison_sociale(rs.getString("raison_sociale"));
+                client.setAdresse(rs.getString("adresse"));
+                client.setCode_postal(rs.getString("code_postal"));
+                client.setVille(rs.getString("ville"));
+                client.setPays(rs.getString("pays"));
+                client.setTelephone(rs.getString("telephone"));
+                client.setEmail(rs.getString("email"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur DAO Client par ID", e);
+        }
+        return client;
+    }
+
+
     // =================================================================================
-	// FERMETURE DES RESSOURCES ORGANISATION
+	// RECUPERATION N° ENREGISTREMENT ENCOURS CLIENT
+	// =================================================================================
+    @Override
+    public int getNoOfRecords() {
+        return noOfRecords;
+    }
+    @Override
+    public Integer getIntegerRecords() {
+    	Integer integerRecords = noOfRecords;
+        return integerRecords;
+    }
+
+    // =================================================================================
+	// FERMETURE DES RESSOURCES CLIENT
 	// =================================================================================
     private void closeResources(Connection connexion, Statement statement, ResultSet rs) {
         if (rs != null) {
@@ -96,5 +134,4 @@ public class ClientDaoImpl implements ClientDao {
             }
         }
     }
-
 }

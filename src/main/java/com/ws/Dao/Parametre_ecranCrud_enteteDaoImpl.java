@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Parametre_ecranCrud_entete;
 import com.ws.configuration.DatasourceH;
 

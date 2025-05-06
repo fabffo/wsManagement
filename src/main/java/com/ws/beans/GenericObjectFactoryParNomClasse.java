@@ -45,6 +45,14 @@ public class GenericObjectFactoryParNomClasse {
             	                else if (paramType == double.class && value instanceof String) {
             	                    value = Double.parseDouble((String) value);
             	                }
+            	                // Conversion pour Float
+            	                else if (paramType == Float.class && value instanceof String) {
+            	                    value = Float.parseFloat((String) value);
+            	                }
+            	                // Conversion pour float (primitive)
+            	                else if (paramType == float.class && value instanceof String) {
+            	                    value = Float.parseFloat((String) value);
+            	                }
             	                // Conversion pour Integer
             	                else if (paramType == Integer.class && value instanceof String) {
             	                    value = Integer.parseInt((String) value);

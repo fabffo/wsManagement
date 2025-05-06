@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.Dao.ContratDao;
+import com.ws.Dao.ContratDaoAncien;
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
 import com.ws.Dao.StatutDao;
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Statut;
 import com.ws.forms.contrat.GestionContratPagination;
 
@@ -30,7 +30,7 @@ public class GestionContrat extends HttpServlet {
 
 	// Initialisation de variables
 	private static final long serialVersionUID = 1L;
-	private ContratDao contratDao;
+	private ContratDaoAncien contratDao;
 	private StatutDao statutDao;
 	private List<Statut> lesStatuts;
 	public static final String MODIFIER = "MODIFIER";
@@ -67,7 +67,7 @@ public class GestionContrat extends HttpServlet {
 		String select_like;
 		String searchContrat = "";
 		String critereContrat = "";
-		List<Contrat> list;
+		List<ContratAncien> list;
 		String debutsession = "debutsession";
 		String tag_statut;
 

@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import com.ws.Dao.ContratDao;
+import com.ws.Dao.ContratDaoAncien;
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
 import com.ws.beans.Collaborateur;
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Societe;
 import com.ws.beans.TypeContratSociete;
 import com.ws.configuration.Configuration;
@@ -47,7 +47,7 @@ public class CopieContrat extends HttpServlet {
 		public static final String ATT_FORM = "form";
 		public static final String VUE_SUCCES = "gestionContrat";
 		public static final String VUE_FORM = "/WEB-INF/JSP_contrat/copieContrat.jsp";
-		private ContratDao contratDao;
+		private ContratDaoAncien contratDao;
 		DaoFactory daoFactory;
 		private Configuration configuration = new Configuration();
 		public static final int TAILLE_TAMPON = 10240;
@@ -65,7 +65,7 @@ public class CopieContrat extends HttpServlet {
 		String cheminFichier;
 		int tampon_fichier;
 		String action ;
-		Contrat contrat;
+		ContratAncien contrat;
 		String statut;
 		String contract;
 		String description;
@@ -166,7 +166,7 @@ public class CopieContrat extends HttpServlet {
 
 				/* Traitement de la requête et récupération du bean en résultant */
 				// ---------------------------------------------------------------------
-				Contrat contrat = formX.ControlerExistenceContrat( request );
+				ContratAncien contrat = formX.ControlerExistenceContrat( request );
 
 				// si pas d'erreur existence on controle les données
 				// si erreur de données on remplace le formulaire
@@ -328,7 +328,7 @@ public class CopieContrat extends HttpServlet {
 
 			// ---------Statut par défaut en cours -----------------------------
 			statut = "En-cours";
-			contrat = new Contrat();
+			contrat = new ContratAncien();
 			contrat.setStatut(statut);
 
 			List<String> listStatut = new ArrayList<String>();

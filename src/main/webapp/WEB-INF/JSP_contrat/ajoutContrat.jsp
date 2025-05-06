@@ -2,8 +2,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////    PROJET LOGICIEL FACTURATION COMPTABILITE                          ///
 ///     PROGRAMME JSP CONTRATCLIENT CREATION                              ///
-////    Créé par Fabrice FOUGERY le 29/04/2024                            ///
-////    Modifié par ....... .... le ../../....                            ///
+////    Crï¿½ï¿½ par Fabrice FOUGERY le 29/04/2024                            ///
+////    Modifiï¿½ par ....... .... le ../../....                            ///
 /////////////////////////////////////////////////////////////////////////////
 ->
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%><!DOCTYPE html>
@@ -93,7 +93,7 @@
 							</select> <span class="erreur text-danger ">${form.erreurs['collaborateur']}</span>
 						</div>
 						<div class="col-5">
-							Date de démarrage<input type="date" class="form-control"
+							Date de dï¿½marrage<input type="date" class="form-control"
 								name="date_demarrage" value=${contrat.date_demarrage}>
 							<span class="erreur text-danger ">${form.erreurs['date_demarrage']}</span>
 						</div>

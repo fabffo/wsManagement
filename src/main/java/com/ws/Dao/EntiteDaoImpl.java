@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Entite;
 import com.ws.configuration.DatasourceH;
 
@@ -287,6 +287,32 @@ public class EntiteDaoImpl implements EntiteDao {
         	connexion = daoFactory.getConnection();
             statement = connexion.createStatement();
             String sql = "SELECT id, nom, libelle FROM entite where nom='Salarie';";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                Entite entite = new Entite();
+                entite.setId(resultat.getInt("id"));
+                entite.setNom(resultat.getString("nom"));
+                entite.setLibelle(resultat.getString("libelle"));
+                entites.add(entite);
+                }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table Entite"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return entites;
+    }
+    @Override
+    public List<Entite> listerEntiteInterne() throws DaoException {
+        List<Entite> entites = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT id, nom, libelle FROM entite where nom='Interne';";
             resultat = statement.executeQuery(sql);
             while (resultat.next()) {
                 Entite entite = new Entite();

@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Statut;
 import com.ws.configuration.DatasourceH;
 
@@ -232,6 +232,10 @@ public class StatutDaoImpl implements StatutDao {
 
     @Override
     public List<Statut> listerStatutSalarie() throws DaoException {
+    	return listerStatut();
+    }
+    @Override
+    public List<Statut> listerStatutInterne() throws DaoException {
     	return listerStatut();
     }
 

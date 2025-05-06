@@ -29,9 +29,9 @@ import java.util.Map;
 
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
-import com.ws.Dao.ContratDao;
+import com.ws.Dao.ContratDaoAncien;
 import com.ws.beans.Collaborateur;
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Societe;
 import com.ws.beans.TypeContratSociete;
 import com.ws.configuration.Configuration;
@@ -52,7 +52,7 @@ public class RenommageContrat extends HttpServlet {
 	public static final String ATT_FORM = "form";
 	public static final String VUE_SUCCES = "gestionContrat";
 	public static final String VUE_FORM = "/WEB-INF/JSP_contrat/renommageContrat.jsp";
-	private ContratDao contratDao;
+	private ContratDaoAncien contratDao;
 	DaoFactory daoFactory;
 	private Configuration configuration = new Configuration();
 	public static final int TAILLE_TAMPON = 10240;
@@ -70,7 +70,7 @@ public class RenommageContrat extends HttpServlet {
 	String cheminFichier;
 	int tampon_fichier;
 	String action ;
-	Contrat contrat;
+	ContratAncien contrat;
 	String statut;
 	String contract;
 	String description;
@@ -153,7 +153,7 @@ public class RenommageContrat extends HttpServlet {
 
 			/* Traitement de la requête et récupération du bean en résultant */
 			// ---------------------------------------------------------------------
-			contrat = formD.RenommerContrat( request, (Contrat) request.getSession().getAttribute(ATT_CONTRATCLIENT) );
+			contrat = formD.RenommerContrat( request, (ContratAncien) request.getSession().getAttribute(ATT_CONTRATCLIENT) );
 
 			/* Ajout durequest.getSession(). bean  à l'objet requête */
 			// ---------------------------------------------------------------------
@@ -307,7 +307,7 @@ public class RenommageContrat extends HttpServlet {
 
 		// ---------Statut par défaut en cours -----------------------------
 		statut = "En-cours";
-		contrat = new Contrat();
+		contrat = new ContratAncien();
 		contrat.setStatut(statut);
 
 		List<String> listStatut = new ArrayList<String>();

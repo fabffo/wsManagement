@@ -31,6 +31,7 @@ public interface OrganisationDao {
 				String type_entite);
 		List<Organisation> listerOrganisationClient() throws DaoException;
 		List<Organisation> listerOrganisationFournisseur() throws DaoException;
-		List<Organisation> listerOrganisationSalarie() throws DaoException;;
+		List<Organisation> listerOrganisationSalarie() throws DaoException;
+		List<Organisation> listerOrganisationInterne() throws DaoException;;
 
 }

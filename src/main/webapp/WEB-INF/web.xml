@@ -329,7 +329,6 @@
     <servlet-name>SuppressionTva</servlet-name>
     <url-pattern>/suppressionTva</url-pattern>
   </servlet-mapping>
-
   <servlet>
     <description></description>
     <display-name>GestionParametre</display-name>
@@ -355,6 +354,12 @@
     <display-name>CrudParametreMultiligne</display-name>
     <servlet-name>CrudParametreMultiligne</servlet-name>
     <servlet-class>com.ws.servlets.parametre.CrudParametreMultiligne</servlet-class>
+    <multipart-config>
+      <location>C:\Users\fougery\Documents\tampon</location>
+      <max-file-size>10485760</max-file-size>
+      <max-request-size>52428800</max-request-size>
+      <file-size-threshold>1048576</file-size-threshold>
+    </multipart-config>
   </servlet>
   <servlet-mapping>
     <servlet-name>CrudParametreMultiligne</servlet-name>
@@ -400,8 +405,6 @@
     <servlet-name>SuppressionParametre</servlet-name>
     <url-pattern>/suppressionParametre</url-pattern>
   </servlet-mapping>
-
-
   <servlet>
     <description></description>
     <display-name>GestionMetier</display-name>
@@ -777,7 +780,7 @@
     <display-name>MajContrat</display-name>
     <servlet-name>MajContrat</servlet-name>
     <servlet-class>com.ws.servlets.contrat.MajContrat</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -793,7 +796,7 @@
     <display-name>CopieContrat</display-name>
     <servlet-name>CopieContrat</servlet-name>
     <servlet-class>com.ws.servlets.contrat.CopieContrat</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -840,7 +843,7 @@
     <servlet-name>SuppressionContrat</servlet-name>
     <url-pattern>/suppressionContrat</url-pattern>
   </servlet-mapping>
-   <servlet>
+  <servlet>
     <description></description>
     <display-name>AnnulationContrat</display-name>
     <servlet-name>AnnulationContrat</servlet-name>
@@ -919,7 +922,7 @@
     <display-name>MajMission</display-name>
     <servlet-name>MajMission</servlet-name>
     <servlet-class>com.ws.servlets.mission.MajMission</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -935,7 +938,7 @@
     <display-name>CopieMission</display-name>
     <servlet-name>CopieMission</servlet-name>
     <servlet-class>com.ws.servlets.mission.CopieMission</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -982,7 +985,7 @@
     <servlet-name>SuppressionMission</servlet-name>
     <url-pattern>/suppressionMission</url-pattern>
   </servlet-mapping>
-   <servlet>
+  <servlet>
     <description></description>
     <display-name>AnnulationMission</display-name>
     <servlet-name>AnnulationMission</servlet-name>
@@ -1051,7 +1054,7 @@
     <display-name>GestionEcritureBanque_import</display-name>
     <servlet-name>GestionEcritureBanque_import</servlet-name>
     <servlet-class>com.ws.servlets.ecritureBanque.GestionEcritureBanque_import</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1067,7 +1070,7 @@
     <display-name>VisualisationEcritureBanque_import</display-name>
     <servlet-name>VisualisationEcritureBanque_import</servlet-name>
     <servlet-class>com.ws.servlets.ecritureBanque.VisualisationEcritureBanque_import</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1078,13 +1081,12 @@
     <servlet-name>VisualisationEcritureBanque_import</servlet-name>
     <url-pattern>/visualisationEcritureBanque_import</url-pattern>
   </servlet-mapping>
-
-   <servlet>
+  <servlet>
     <description></description>
     <display-name>ImportEcritureBanque_import</display-name>
     <servlet-name>ImportEcritureBanque_import</servlet-name>
     <servlet-class>com.ws.servlets.ecritureBanque.ImportEcritureBanque_import</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1095,13 +1097,12 @@
     <servlet-name>ImportEcritureBanque_import</servlet-name>
     <url-pattern>/importEcritureBanque_import</url-pattern>
   </servlet-mapping>
-
   <servlet>
     <description></description>
     <display-name>RapprochementEcritureBanque</display-name>
     <servlet-name>RapprochementEcritureBanque</servlet-name>
     <servlet-class>com.ws.servlets.ecritureBanque.RapprochementEcritureBanque</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1112,13 +1113,12 @@
     <servlet-name>RapprochementEcritureBanque</servlet-name>
     <url-pattern>/rapprochementEcritureBanque</url-pattern>
   </servlet-mapping>
-
-<servlet>
+  <servlet>
     <description></description>
     <display-name>GestionFactureAchat</display-name>
     <servlet-name>GestionFactureAchat</servlet-name>
     <servlet-class>com.ws.servlets.factureAchat.GestionFactureAchat</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1134,7 +1134,7 @@
     <display-name>VisualisationFactureAchat</display-name>
     <servlet-name>VisualisationFactureAchat</servlet-name>
     <servlet-class>com.ws.servlets.factureAchat.VisualisationFactureAchat</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1145,13 +1145,12 @@
     <servlet-name>VisualisationFactureAchat</servlet-name>
     <url-pattern>/visualisationFactureAchat</url-pattern>
   </servlet-mapping>
-
-   <servlet>
+  <servlet>
     <description></description>
     <display-name>ImportFactureAchat</display-name>
     <servlet-name>ImportFactureAchat</servlet-name>
     <servlet-class>com.ws.servlets.factureAchat.ImportFactureAchat</servlet-class>
-     <multipart-config>
+    <multipart-config>
       <location>C:\Users\fougery\Documents\tampon</location>
       <max-file-size>10485760</max-file-size>
       <max-request-size>52428800</max-request-size>
@@ -1162,9 +1161,6 @@
     <servlet-name>ImportFactureAchat</servlet-name>
     <url-pattern>/importFactureAchat</url-pattern>
   </servlet-mapping>
-
-
-
   <servlet>
     <description></description>
     <display-name>OuvrirPdf</display-name>
@@ -1202,7 +1198,7 @@
     <servlet-name>PdfServlet</servlet-name>
     <url-pattern>/pdf</url-pattern>
   </servlet-mapping>
-   <servlet>
+  <servlet>
     <description></description>
     <display-name>MenuServlet</display-name>
     <servlet-name>MenuServlet</servlet-name>
@@ -1221,5 +1217,45 @@
   <servlet-mapping>
     <servlet-name>GestiongenererParametrage</servlet-name>
     <url-pattern>/gestiongenererParametrage</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AjoutFactureVente</display-name>
+    <servlet-name>AjoutFactureVente</servlet-name>
+    <servlet-class>com.ws.servlets.factureVente.AjoutFactureVente</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AjoutFactureVente</servlet-name>
+    <url-pattern>/ajoutFactureVente</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ActionfactureVente</display-name>
+    <servlet-name>ActionfactureVente</servlet-name>
+    <servlet-class>com.ws.servlets.factureVente.ActionfactureVente</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ActionfactureVente</servlet-name>
+    <url-pattern>/actionfactureVente</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ClientAdresse</display-name>
+    <servlet-name>ClientAdresse</servlet-name>
+    <servlet-class>com.ws.servlets.factureVente.ClientAdresse</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ClientAdresse</servlet-name>
+    <url-pattern>/ClientAdresse</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DownloadFactureServlet</display-name>
+    <servlet-name>DownloadFactureServlet</servlet-name>
+    <servlet-class>com.ws.servlets.factureVente.DownloadFactureServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DownloadFactureServlet</servlet-name>
+    <url-pattern>/DownloadFactureServlet</url-pattern>
   </servlet-mapping>
 </web-app>

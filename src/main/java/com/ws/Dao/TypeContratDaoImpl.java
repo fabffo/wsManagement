@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ws.beans.Contrat;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.TypeContrat;
 import com.ws.configuration.DatasourceH;
 
@@ -317,6 +317,38 @@ public class TypeContratDaoImpl implements TypeContratDao {
         	connexion = daoFactory.getConnection();
             statement = connexion.createStatement();
             String sql = "SELECT typecontrat.id, typecontrat.nom, typecontrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, entite.nom FROM typeContrat inner join entite on typecontrat.entite=entite.id where entite.nom='Salarie';";
+            resultat = statement.executeQuery(sql);
+            while (resultat.next()) {
+                TypeContrat typeContrat = new TypeContrat();
+                typeContrat.setId(resultat.getInt("typecontrat.id"));
+                typeContrat.setNom(resultat.getString("typecontrat.nom"));
+                typeContrat.setLibelle(resultat.getString("typecontrat.libelle"));
+                typeContrat.setEntite(resultat.getInt("entite"));
+                typeContrat.setActivite(resultat.getInt("activite"));
+                typeContrat.setCheminRelatif(resultat.getString("cheminRelatif"));
+                typeContrat.setCheminAbsolu(resultat.getString("cheminAbsolu"));
+                typeContrat.setActivite(resultat.getInt("typeIntervenant"));
+                typeContrats.add(typeContrat);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Impossible de lister les enregistrements avec la table TypeContrat"+ e);
+        } finally {
+            closeResources(connexion, statement, resultat);
+        }
+        return typeContrats;
+    }
+
+    @Override
+    public List<TypeContrat> listerTypeContratInterne() throws DaoException {
+        List<TypeContrat> typeContrats = new ArrayList<>();
+        Connection connexion = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+
+        try {
+        	connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            String sql = "SELECT typecontrat.id, typecontrat.nom, typecontrat.libelle, entite, activite, cheminRelatif, cheminAbsolu, typeIntervenant, entite.nom FROM typeContrat inner join entite on typecontrat.entite=entite.id where entite.nom='Interne';";
             resultat = statement.executeQuery(sql);
             while (resultat.next()) {
                 TypeContrat typeContrat = new TypeContrat();

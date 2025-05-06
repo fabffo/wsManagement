@@ -7,25 +7,45 @@
 
 package com.ws.Dao;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.ws.beans.FactureAchat;
 import com.ws.beans.FactureAchat;
 
 public interface FactureAchatDao {
-	    void importerFactureAchat( FactureAchat entete ) throws DaoException;
-	    List<FactureAchat> listerFactureAchat() throws DaoException;
-	    FactureAchat trouverFactureAchat( Integer id )throws DaoException;
-	    public List<FactureAchat> rechercheFactureAchats(int offset, int noOfRecords, String select_tri);
-	    public int getNoOfRecords();
-	    public List<FactureAchat> rechercheLikeFactureAchats(int offset, int noOfRecords, String select_tri, String select_like);
-		List<FactureAchat> rechercheLikeVisualisationFactureAchats(int id, int offset,
-				int noOfRecords, String select_tri, String select_like);
-		List<FactureAchat> rechercheVisualisationFactureAchats(int id, int offset, int noOfRecords,
-				String select_tri);
-		int getNoOfRecordsVisualisation();
-		int getNoOfRecordsRapprochement();
-		List<FactureAchat> rechercheRapprochementFactureAchats(int id, int yearMonth, int offset, int noOfRecords,
-				String select_tri);
-		List<FactureAchat> rechercheLikeRapprochementFactureAchats(int id, int yearMonth, int offset,
-				int noOfRecords, String select_tri, String select_like);
+	void ajouterFactureAchat(FactureAchat factureAchat) throws DaoException;
+
+	void modifierFactureAchat(FactureAchat factureAchat) throws DaoException;
+
+	void copierFactureAchat(FactureAchat factureAchat) throws DaoException;
+
+	void supprimerFactureAchat(Integer id) throws DaoException;
+
+	void renommerFactureAchat(FactureAchat factureAchat) throws DaoException;
+
+	List<FactureAchat> listerFactureAchat() throws DaoException;
+
+	FactureAchat trouverFactureAchat(Integer id) throws DaoException;
+
+	boolean trouverNomFactureAchat(String nom) throws DaoException;
+
+	int getNoOfRecords();
+
+	Integer getIntegerRecords();
+
+	List<Map<String, Object>> rechercheFactureAchats(Integer offset, Integer noOfRecords, String select_tri,
+			LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut, String type_factureAchat);
+
+	List<Map<String, Object>> rechercheLikeFactureAchats(Integer offset, Integer noOfRecords, String select_tri,
+			String select_like, LinkedHashMap<String, String> dictionnaire_nom_colonne, String tag_statut,
+			String type_factureAchat);
+
+	List<FactureAchat> listerFactureAchatSalarie() throws DaoException;
+
+	List<FactureAchat> listerFactureAchatFournisseur() throws DaoException;
+
+	List<FactureAchat> listerFactureAchatClient() throws DaoException;
+
 	   }

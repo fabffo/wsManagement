@@ -16,15 +16,15 @@ import java.io.IOException;
 
 import com.ws.Dao.DaoException;
 import com.ws.Dao.DaoFactory;
-import com.ws.Dao.ContratDao;
-import com.ws.beans.Contrat;
+import com.ws.Dao.ContratDaoAncien;
+import com.ws.beans.ContratAncien;
 
 /**
  * Servlet implementation class SuppressionContrat
  */
 public class SuppressionContrat extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ContratDao contratDao;
+	private ContratDaoAncien contratDao;
 	 public static final String VUE_SUCCES      = "gestionContrat";
 	    public static final String VUE_FORM        = "/WEB-INF/JSP_contrat/ajoutContrat.jsp";
 
@@ -39,7 +39,7 @@ public class SuppressionContrat extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer id =Integer.parseInt(request.getParameter("id"));
 		id =Integer.parseInt(request.getParameter("id"));
-		Contrat contrat = null;
+		ContratAncien contrat = null;
 
 
 		this.getServletContext().getRequestDispatcher("/WEB-INF/JSP_contrat/suppressionContrat.jsp").forward(request, response);

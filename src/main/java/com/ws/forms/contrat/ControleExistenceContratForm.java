@@ -18,14 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ws.Dao.DaoFactory;
-import com.ws.Dao.ContratDao;
-import com.ws.beans.Contrat;
+import com.ws.Dao.ContratDaoAncien;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Tva;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 public final class ControleExistenceContratForm {
-	private ContratDao contratDao;
+	private ContratDaoAncien contratDao;
 	private static final String CHAMP_STATUT = "statut";
 	private static final String CHAMP_DOCUMENT = "document";
 	private static final String CHAMP_NOM_CONTRAT = "nom_contrat";
@@ -63,7 +63,7 @@ public final class ControleExistenceContratForm {
 		return resultat;
 	}
 
-	public Contrat ControlerExistenceContrat(HttpServletRequest request) {
+	public ContratAncien ControlerExistenceContrat(HttpServletRequest request) {
 
 		DaoFactory daoFactory = DaoFactory.getInstance();
 		this.contratDao = daoFactory.getContratDao();
@@ -116,7 +116,7 @@ public final class ControleExistenceContratForm {
 					valeurCommentaire = getValeurChamp(request, CHAMP_COMMENTAIRE);
 
 		// Instanciation de la classe contrat
-		Contrat contrat = new Contrat();
+		ContratAncien contrat = new ContratAncien();
 		contrat.setStatut(valeurStatut);
 		contrat.setDocument(valeurDocument);
 		contrat.setNom_contrat(valeurNom_contrat);

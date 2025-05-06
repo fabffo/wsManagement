@@ -19,8 +19,8 @@ import java.util.Map;
 
 import com.ws.Dao.DaoFactory;
 import com.ws.Dao.MissionDao;
-import com.ws.Dao.ContratDao;
-import com.ws.beans.Contrat;
+import com.ws.Dao.ContratDaoAncien;
+import com.ws.beans.ContratAncien;
 import com.ws.beans.Mission;
 import com.ws.beans.Tva;
 
