@@ -1,8 +1,40 @@
-# Compiled class file
+# Fichiers Eclipse
+*.launch
+*.log
+*.tmp
+*.bak
+*.swp
+.settings/
+.project
+.classpath
+
+# Build
+bin/
+target/
+build/
+
+# Maven (si jamais utilisé plus tard)
+.mvn/
+!**/src/main/**
+!**/src/test/**
+dependency-reduced-pom.xml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE Java (générique)
+.idea/
+*.iml
+
+# fichiers compilés
 *.class
 
-# Log file
-*.log
+# fichiers spécifiques utilisateur
+*.user
 
 # BlueJ files
 *.ctxt
@@ -22,3 +54,4 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
