@@ -34,10 +34,12 @@ public class EmetteurAdresse extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
         out.print("{");
+        out.printf("\"raison_sociale_emetteur\":\"%s\",", maSociete.getRaison_sociale());
         out.printf("\"adresse1\":\"%s\",", maSociete.getAdresse());
         out.printf("\"adresse2\":\"%s\",", maSociete.getCode_postal()+ maSociete.getVille() + maSociete.getPays());
         out.printf("\"adresse3\":\"%s\"", maSociete.getEmail());
         out.print("}");
+        System.out.println("EMETTEUR");
         out.flush();
     }
 }

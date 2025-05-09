@@ -75,6 +75,7 @@ public class MaSocieteDaoImpl implements MaSocieteDao {
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement ps = connexion.prepareStatement("SELECT * FROM organisation left join entite on organisation.entite=entite.id where entite.nom='Interne' and organisation.id = ?")) {
             ps.setInt(1, id);
+            System.out.println(ps);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 maSociete = new MaSociete();

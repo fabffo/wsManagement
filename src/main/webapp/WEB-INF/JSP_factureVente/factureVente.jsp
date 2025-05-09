@@ -39,7 +39,7 @@
                         <option value="${e.id}">${e.raison_sociale}</option>
                     </c:forEach>
                 </select>
-				<input type="hidden" name="raison_sociale_emetteur" id="rs_emetteur">
+				<input type="hidden" name="raison_sociale_emetteur" id="raison_sociale_emetteur">
                 <input name="adresse1_emetteur" id="adresse1_emetteur" class="form-control mt-1" readonly>
                 <input name="adresse2_emetteur" id="adresse2_emetteur" class="form-control mt-1" readonly>
                 <input name="adresse3_emetteur" id="adresse3_emetteur" class="form-control mt-1" readonly>
@@ -53,7 +53,7 @@
                         <option value="${c.id}">${c.raison_sociale}</option>
                     </c:forEach>
                 </select>
-                <input type="hidden" name="raison_sociale_client" id="rs_client">
+                <input type="hidden" name="raison_sociale_client" id="raison_sociale_client">
                 <input name="adresse1_client" id="adresse1_client" class="form-control mt-1" readonly>
                 <input name="adresse2_client" id="adresse2_client" class="form-control mt-1" readonly>
                 <input name="adresse3_client" id="adresse3_client" class="form-control mt-1" readonly>
@@ -169,7 +169,8 @@
         fetch('clientAdresse?id=' + id)
             .then(res => res.json())
             .then(data => {
-                document.getElementById('rs_client').value = data.raison_sociale;
+            	 console.log("Client data:", data); // log pour debug
+                document.getElementById('raison_sociale_client').value = data.raison_sociale_client;
                 document.getElementById('adresse1_client').value = data.adresse1;
                 document.getElementById('adresse2_client').value = data.adresse2;
                 document.getElementById('adresse3_client').value = data.adresse3;
@@ -180,12 +181,14 @@
         fetch('emetteurAdresse?id=' + id)
             .then(res => res.json())
             .then(data => {
-                document.getElementById('rs_emetteur').value = data.raison_sociale;
+            	 console.log("emetteur data:", data); // log pour debug
+                document.getElementById('raison_sociale_emetteur').value = data.raison_sociale_emetteur;
                 document.getElementById('adresse1_emetteur').value = data.adresse1;
                 document.getElementById('adresse2_emetteur').value = data.adresse2;
                 document.getElementById('adresse3_emetteur').value = data.adresse3;
             });
     }
+
 
     function prepareHtml() {
         const factureBox = document.querySelector('.facture-box').cloneNode(true);

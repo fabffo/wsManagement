@@ -171,14 +171,7 @@ public class ActionFactureVente extends HttpServlet {
 			    File pdfFile = new File(pdfPath, baseName + ".pdf");
 
 			 // Génération PDF avec iText 7
-			    try (OutputStream os = new FileOutputStream(pdfFile)) {
-			        PdfWriter writer = new PdfWriter();
-			        PdfDocument pdfDoc = new PdfDocument(writer);
-			        ConverterProperties props = new ConverterProperties();
-			        HtmlConverter.convertToPdf(htmlContent, pdfDoc, props);
-			    } catch (Exception e) {
-			        throw new ServletException("Erreur lors de la génération du PDF avec iText", e);
-			    }
+
 
 			    // Redirection vers HTML (ou remplace avec .pdf si tu préfères l'ouvrir directement)
 			    String httpPath = req.getContextPath() + "/factures/temp/" + baseName + ".html";

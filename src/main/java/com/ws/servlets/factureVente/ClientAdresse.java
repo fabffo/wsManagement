@@ -35,10 +35,12 @@ public class ClientAdresse extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
         out.print("{");
+        out.printf("\"raison_sociale_client\":\"%s\",", client.getRaison_sociale());
         out.printf("\"adresse1\":\"%s\",", client.getAdresse());
         out.printf("\"adresse2\":\"%s\",", client.getCode_postal()+ client.getVille() + client.getPays());
         out.printf("\"adresse3\":\"%s\"", client.getEmail());
         out.print("}");
+        System.out.println("CLIENT");
         out.flush();
     }
 }
