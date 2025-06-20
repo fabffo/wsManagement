@@ -1,5 +1,7 @@
 package com.ws.servlets.ecritureBanque;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +15,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.itextpdf.text.log.SysoCounter;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.ws.Dao.ContratDaoAncien;
 import com.ws.Dao.DaoException;
@@ -24,6 +29,7 @@ import com.ws.beans.EcritureBanque_import;
 import com.ws.configuration.Configuration;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,9 +38,11 @@ import jakarta.servlet.http.Part;
 /**
  * Servlet implementation class ImportEcritureBanque
  */
+@MultipartConfig
 public class ImportEcritureBanque_import extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String VUE_FORM = "/WEB-INF/JSP_ecritureBanque/ecritureBanque_import.jsp";
+    private static final String VUE_FORM = "/WEB-INF/JSP_ecritureBanque/GestionEcritureBanque_import.jsp";
+
 
     private DaoFactory daoFactory;
     private EcritureBanque_importDao ecritureBanque_importDao;
@@ -56,96 +64,100 @@ public class ImportEcritureBanque_import extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String codeBanque = request.getParameter("codeBanque");
         Part filePart = request.getPart("fichier");
-        List<String[]> data = new ArrayList<>();
         List<EcritureBanque_detail> detailsList = new ArrayList<>();
-        Date date = null;
-        EcritureBanque_import entete = null ;
-        EcritureBanque_detail detail = null;
-        // Vérifiez si le fichier a été sélectionné
+        EcritureBanque_import entete = null;
+        int ligneNumero = 0;
+
         if (filePart != null && filePart.getSize() > 0) {
-            try (InputStream fileContent = filePart.getInputStream();
-                 CSVReader reader = new CSVReader(new InputStreamReader(fileContent))) {
+            System.out.println("debut import");
 
-                String[] line;
-                int ligneNumero =0;
-                while ((line = reader.readNext()) != null) {
-                    if (line.length < 4) continue; // Ignore les lignes mal formées
+            try (
+                InputStream fileContent = filePart.getInputStream();
+                BufferedReader rawReader = new BufferedReader(new InputStreamReader(fileContent, "UTF-8"));
+            ) {
+                // Lire tout le contenu brut
+                StringBuilder rawCsv = new StringBuilder();
+                String line;
+                while ((line = rawReader.readLine()) != null) {
+                    rawCsv.append(line).append("\n"); // force LF pour unifier
+                }
 
-                    	ligneNumero = ligneNumero + 1;
-                    	System.out.println("numéroligne" +ligneNumero);
-                    	String dateString = line[0]; // Chaîne à parser
-                    	System.out.println("datestring"+ dateString);
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy"); // Format de la date
-                        formatter.setLenient(false); // Pour s'assurer que la date est valide
+                // Nettoyage CRLF: garde uniquement \r\n, retire LF/CR orphelins
+                System.out.println(rawCsv.toString());
+                String cleanedCsv = rawCsv.toString().replace("\n", "")  ;            // supprimer LF orphelins
 
+                System.out.println(cleanedCsv.toString());
+                // Lecture CSV avec ; comme séparateur
+                try (
+                    InputStream cleanedStream = new ByteArrayInputStream(cleanedCsv.getBytes("UTF-8"));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(cleanedStream));
+                    CSVReader csvReader = new CSVReaderBuilder(reader)
+                        .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
+                        .build()
+                ) {
+                    String[] row;
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    formatter.setLenient(false);
+
+                    while ((row = csvReader.readNext()) != null) {
+                        System.out.println("Nb colonnes = " + row.length);
+                        if (row.length < 4) continue;
+
+                        String dateStr = row[0].trim();
+                        if (!dateStr.matches("\\d{2}/\\d{2}/\\d{4}")) continue;
+
+                        Date date;
                         try {
-                            date = formatter.parse(dateString); // Conversion de String à Date
-                            System.out.println("Date : " + date);
+                            date = formatter.parse(dateStr);
                         } catch (ParseException e) {
-                            System.out.println("Erreur de parsing : " + e.getMessage());
+                            continue;
                         }
 
-                        // Utilisation de Calendar pour extraire l'année et le mois
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(date);
+                        StringBuilder libelleBuilder = new StringBuilder();
+                        for (int i = 1; i < row.length - 2; i++) {
+                            libelleBuilder.append(row[i].trim()).append(" ");
+                        }
 
-                        int year = calendar.get(Calendar.YEAR);
-                        int month = calendar.get(Calendar.MONTH) + 1; //
+                        String libelle = libelleBuilder.toString().replaceAll("\\s{2,}", " ").trim();
+                        String debitStr = row[row.length - 2].trim().replace(",", ".").replaceAll("[^0-9.]", "");
+                        String creditStr = row[row.length - 1].trim().replace(",", ".").replaceAll("[^0-9.]", "");
 
-                     // Combinaison de l'année et du mois sous la forme AAAAMM
-                        int yearMonth = year * 100 + month;
+                        float debit = debitStr.isEmpty() ? 0f : Float.parseFloat(debitStr);
+                        float credit = creditStr.isEmpty() ? 0f : Float.parseFloat(creditStr);
 
+                        EcritureBanque_detail detail = new EcritureBanque_detail();
+                        detail.setDate_ecriture(date);
+                        detail.setLibelle_ecriture(libelle);
+                        detail.setDebit(debit);
+                        detail.setCredit(credit);
+                        detailsList.add(detail);
+                        ligneNumero++;
+                    }
 
+                    if (ligneNumero > 0) {
+                        entete = new EcritureBanque_import();
+                        entete.setCode_banque("CRAGPRO");
+                        entete.setNom_import(filePart.getSubmittedFileName());
+                        entete.setNbr_ligne(ligneNumero);
+                        ecritureBanque_importDao.importerEcritureBanque(entete, detailsList);
+                        request.setAttribute("message", ligneNumero + " écritures importées.");
+                    }
 
-    	                String libelle = line[1];
-    	                float debit = Float.parseFloat(line[2]);
-                        float credit = Float.parseFloat(line[3]);
-
-                    // Instanciation d'EcritureBanqueDetail
-                    detail = new EcritureBanque_detail();
-                    detail.setDate_ecriture(date);
-                    detail.setLibelle_ecriture(libelle);
-                    detail.setDebit(debit);
-                    detail.setCredit(credit);
-                    detailsList.add(detail);
-
+                } catch (CsvValidationException e) {
+                    request.setAttribute("errorMessage", "Erreur de lecture CSV.");
                 }
-                if (ligneNumero>0) {
-                entete = new EcritureBanque_import();
-                entete.setCode_banque("CRAGPRO");
-                entete.setNom_import(filePart.getSubmittedFileName());
-                entete.setNbr_ligne(ligneNumero);
-                }
-                // Passer les données à la JSP
-                //request.setAttribute("data", data);
-                //request.setAttribute("codeBanque", codeBanque);
-                //request.getRequestDispatcher(VUE_FORM).forward(request, response);
-                //return; // Arrêtez l'exécution après le forward
 
-            } catch (CsvValidationException e) {
-                e.printStackTrace();
-                // Ajoutez un message d'erreur si besoin
-                request.setAttribute("errorMessage", "Erreur de validation du CSV.");
             } catch (Exception e) {
-                e.printStackTrace();
-                // Gérer les autres exceptions
-                request.setAttribute("errorMessage", "Une erreur est survenue lors du traitement du fichier.");
+                request.setAttribute("errorMessage", "Erreur lors du traitement du fichier.");
             }
+
         } else {
             request.setAttribute("errorMessage", "Aucun fichier sélectionné.");
         }
 
-        try {
-        	System.out.println("majdao");
-			ecritureBanque_importDao.importerEcritureBanque(entete, detailsList);
-		} catch (DaoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-        // En cas d'erreur, retournez à la vue de formulaire
-        this.getServletContext().getRequestDispatcher(VUE_FORM).forward(request, response);
+
+        request.getRequestDispatcher(VUE_FORM).forward(request, response);
     }
 }
